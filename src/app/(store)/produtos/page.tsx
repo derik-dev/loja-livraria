@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
-import { supabaseAdmin as supabase, mapProduct } from '@/lib/supabase'
+import { mockProducts } from '@/lib/data/products'
 import { Product, FilterState } from '@/lib/types'
 import { ProductGrid, ProductFilters } from '@/components/product'
 import { PageHero } from '@/components/zine'
@@ -21,8 +21,8 @@ const SORT_OPTIONS = [
 ] as const
 
 export default function ProdutosPage() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const products = mockProducts
+  const loading = false
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
   const [filtersVisible, setFiltersVisible] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
@@ -33,14 +33,6 @@ export default function ProdutosPage() {
   const [aiResults, setAiResults] = useState<Product[] | null>(null)
   const [aiLoading, setAiLoading] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    supabase.from('products').select('*').then(({ data, error }) => {
-      if (error) console.error('[Supabase] produtos:', error)
-      setProducts((data ?? []).map(mapProduct))
-      setLoading(false)
-    })
-  }, [])
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

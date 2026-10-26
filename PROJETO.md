@@ -671,3 +671,39 @@ Ao clicar em qualquer linha da tabela de Pedidos no admin, abre a tela de detalh
 | `src/lib/supabase.ts` | MODIFICADO — mapProduct atualizado |
 
 *Última atualização: 21/06/2026*
+
+
+---
+
+## Mudança de nicho: loja de livros (26/10/2026)
+
+A loja deixou de ser de moda (Vero/Soberana) e virou a livraria **Papelada** (`BRAND_NAME` em `src/lib/brand.ts`). Backup do projeto antigo: `../livraria-virtual-backup`. Banco e lógica não mudaram: só design e textos.
+
+### Feito (parte 1)
+- Tema único `src/themes/biblioteca.css`: dark azul meia-noite (bg #11151F, cards #1A2030, accent #8B9AFF), Poppins nos títulos + DM Sans no texto. Sem amarelo. Os temas `default`, `feminino` e `zine` foram removidos.
+- Layout de marketplace: cabeçalho escuro com busca grande no centro, banner rotativo, fileira de atalhos sobre o banner, "Oferta do dia" + "Ofertas", prateleira, "Mais procurados", categorias, loja física, FAQ e rodapé. Faixas alternam entre branco e cinza-gelo.
+- `ProductCard` no formato de marketplace. Livros sem foto ganham capa gerada.
+- Seções (`masculino`, `feminino`, `inverno`, `tecnologia`, `acessorios`, `novidades`) mantêm os slugs do banco; rótulos viraram Ficção, Não-ficção, Clássicos, Tecnologia & Ciência, Papelaria & Brindes e Novidades (`src/lib/nav.ts`, e também no formulário de produto do admin).
+- Textos da IA (chat Vera, recomendações, busca, descrição e SEO) reescritos para livraria.
+- Regras alinhadas ao checkout: frete grátis acima de R$ 399 (`FREE_SHIPPING_THRESHOLD`), 2% off no Pix, troca em 30 dias.
+- Página de produto reescrita num só layout responsivo; removidos reviews fictícios e o "99% recomendam".
+
+### Falta (próximas partes)
+- Parte 2: catálogo (`/produtos`, `/secao/*`), filtros e página do livro no novo visual; ler `?q=` na busca; autor/editora/ISBN exigem colunas novas (não há hoje).
+- Parte 3: carrinho, drawer, checkout, conta, rastreio, login e chat com o visual novo (hoje ainda têm sombras e bordas do tema anterior).
+- Remover os apelidos `.z-*` / `--z-*` de `biblioteca.css` quando as partes 2 e 3 terminarem.
+- Trocar os produtos de moda do banco por livros (admin); a rota `/api/ai/tamanho` é de roupas e não é usada.
+- Esta pasta não é um repositório git; o fluxo de commit do `PROJETO.md` não se aplica enquanto isso.
+
+### Redesign da home em dark (26/10/2026)
+- Home refeita em `src/components/home/` (Hero, CategoryChips, Deals, TeamPicks, BookCarousel, BestSellers, CategoryGrid, VisitStore) + faixa de confiança no Header. Seções alternam `bg` e `bg-alt`; cards com borda e gradiente; brilho radial no hero; rodapé `#0D1018`.
+- PLACEHOLDERS a trocar antes de publicar: `PROOF_DELIVERED` ("+2.000 livros entregues") em `home/Hero.tsx` e o array `TEAM_PICKS` (indicações da equipe, fictícias) em `home/TeamPicks.tsx`.
+- Telas ainda não redesenhadas (produto, carrinho, checkout, conta) herdam o dark pelo remapeamento dos neutros do Tailwind, mas mantêm a estrutura antiga.
+
+### Tons por seção na home (26/10/2026)
+- Escuro: header, hero, "Mais procurados" e rodapé. Claro: ofertas, escolha da equipe, lançamentos, categorias, loja e FAQ (fundos claros alternam #F5F6FA e #FFFFFF). Definido por `data-tone` / `data-surface` em `app/page.tsx` e variáveis em `themes/biblioteca.css`.
+- Header: faixa de confiança + header no topo da página (não acompanha a rolagem), opacos e sempre escuros.
+
+### Hero com mostruário 3D (26/10/2026)
+- O hero ganhou um mostruário de 5 livros girando 360° sozinho (`home/Showcase3D.tsx` + `.carousel3d` em `themes/biblioteca.css`), sem setas. Velocidade: `--spin` (45s por volta). Pausa ao passar o mouse e para sob `prefers-reduced-motion`. Quantidade: `SHOWCASE_SIZE` em `home/Hero.tsx`.
+- Não rode `next build` com o `next dev` aberto: o dev passa a servir CSS velho. Pare o dev, rode o build e suba o dev de novo.

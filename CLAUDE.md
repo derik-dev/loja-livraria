@@ -38,7 +38,11 @@ Cart state lives in `src/store/cartStore.ts` (Zustand), persisted to localStorag
 
 ### Data Layer
 
-Product and category data is mocked in `src/lib/data/` — `products.ts` and `categories.ts`. Types are defined in `src/lib/types.ts`. There is no backend or API layer; all data is static.
+Livros e categorias vêm do Supabase (`src/lib/supabase.ts`, sempre via `mapProduct`). As seções do site usam os slugs gravados em `products.section` (`masculino`, `feminino`, `inverno`, `tecnologia`, `acessorios`, `novidades`); só os rótulos mudaram para gêneros de livro e ficam em `src/lib/nav.ts`. Regras da loja (nome, frete grátis, textos de aviso) em `src/lib/brand.ts`.
+
+### Visual (tema "biblioteca")
+
+Tema único em `src/themes/biblioteca.css`: dark azul meia-noite, com títulos em Poppins e texto em DM Sans. Fonte única de cor: variáveis `--bg`, `--bg-alt`, `--card`, `--card-hover`, `--ink`, `--muted`, `--accent`, `--border`, `--footer` (viram utilitários Tailwind v4 via `@theme inline`: `bg-bg`, `bg-card`, `text-ink`, `text-muted`, `bg-accent`...). Texto sobre fundo accent é sempre `text-bg`. A home fica em `src/components/home/`. Dois tons por seção: um wrapper com `data-tone="dark"` (padrão) ou `data-tone="light"` (+ `data-surface="alt"` para fundo branco) troca as variáveis daquela seção; componentes leem só as variáveis (`text-on-accent` para texto sobre accent, `text-on-image` sobre capas). O header (com a faixa de confiança) fica no topo da página e rola junto com ela (não é fixo), escuro e opaco. O CSS remapeia a paleta neutra do Tailwind (zinc/stone/gray), então `bg-zinc-900`, `border-zinc-300` etc. já saem no visual da loja; o `/admin` se marca com `data-admin` e mantém o visual original. Código novo usa as variáveis `--bk-*` e as classes `.bk-*`; as `.z-*` e `--z-*` são apelidos do tema anterior (zine) que ainda sustentam telas não migradas (catálogo, produto, carrinho, checkout, conta) e devem sumir quando elas forem refeitas. Livros sem foto usam a capa gerada de `components/zine/BookCover.tsx`.
 
 ### Component Organization
 
@@ -46,5 +50,6 @@ Product and category data is mocked in `src/lib/data/` — `products.ts` and `ca
 - `src/components/product/` — ProductCard, ProductGrid, ProductFilters, ProductGallery
 - `src/components/cart/` — CartDrawer, CartItem
 - `src/components/layout/` — Header, Footer, MobileMenu
+- `src/components/zine/` — blocos da home e utilitários visuais (HomeBanner, ShortcutCards, DealsRow, TopFive, GenreTiles, BookCover, PageHero)
 
 Each component folder has an `index.ts` barrel export.

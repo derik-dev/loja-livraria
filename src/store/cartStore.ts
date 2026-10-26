@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { CartItem, Product } from '@/lib/types'
+import { mockProducts } from '@/lib/data/products'
 
 interface CartStore {
   items: CartItem[]
@@ -66,6 +67,23 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'cart-storage',
+      version: 2,
+      migrate: (persistedState) => {
+        const savedItems = (persistedState as { items?: CartItem[] } | undefined)?.items ?? []
+        const items = savedItems.flatMap((item) => {
+          const product = mockProducts.find((mockProduct) => mockProduct.slug === item.product?.slug)
+          return product ? [{ ...item, product }] : []
+        })
+        return { items } as CartStore
+      },
+      merge: (persistedState, currentState) => {
+        const savedItems = (persistedState as { items?: CartItem[] } | undefined)?.items ?? []
+        const items = savedItems.flatMap((item) => {
+          const product = mockProducts.find((mockProduct) => mockProduct.slug === item.product?.slug)
+          return product ? [{ ...item, product }] : []
+        })
+        return { ...currentState, items }
+      },
     }
   )
 )

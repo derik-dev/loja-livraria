@@ -324,19 +324,6 @@ export default function CheckoutPage() {
       console.error('[Checkout] erro ao salvar pedido:', error)
     }
 
-    // Decrementa estoque via API server-side (usa service role key)
-    await fetch('/api/checkout/decrement-stock', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        items: items.map((i) => ({
-          id: i.product.id,
-          quantity: i.quantity,
-          currentStock: i.product.stock,
-        })),
-      }),
-    })
-
     clearCart()
     setSubmitted(true)
     setLoading(false)
@@ -344,7 +331,7 @@ export default function CheckoutPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
+      <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="bg-white p-12 text-center max-w-md w-full mx-4">
           <div className="w-12 h-12 border border-zinc-900 flex items-center justify-center mx-auto mb-6">
             <svg className="h-6 w-6 text-zinc-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -366,7 +353,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen flex flex-col lg:flex-row">
 
       {/* ── ESQUERDA ── */}
-      <div className="flex-1 bg-[#F5F5F5] lg:overflow-y-auto">
+      <div className="flex-1 bg-bg lg:overflow-y-auto">
         <div className="max-w-[540px] ml-auto px-6 py-10 lg:py-14">
 
           {/* Logo */}

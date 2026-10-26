@@ -1,7 +1,2 @@
 export { BookCover, BookImage } from './BookCover'
 export { default as PageHero } from './PageHero'
-export { default as HomeBanner } from './HomeBanner'
-export { default as ShortcutCards } from './ShortcutCards'
-export { default as DealsRow } from './DealsRow'
-export { default as GenreTiles } from './GenreTiles'
-export { default as TopFive } from './TopFive'

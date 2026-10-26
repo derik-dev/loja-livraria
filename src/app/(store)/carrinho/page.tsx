@@ -36,7 +36,7 @@ export default function CarrinhoPage() {
 
       <div className="grid gap-10 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="border-[3px] border-[var(--z-ink)] bg-[#fffdf6] p-5 shadow-[8px_8px_0_var(--z-ink)]">
+          <div className="border-[3px] border-[var(--z-ink)] bg-card p-5 shadow-[8px_8px_0_var(--z-ink)]">
             <div className="mb-2 flex items-center justify-between">
               <h2 className="z-plain text-sm font-bold uppercase tracking-[0.14em]">
                 {items.length} {items.length === 1 ? 'livro' : 'livros'}

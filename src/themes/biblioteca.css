@@ -1,66 +1,133 @@
-/* Tema "biblioteca" — livraria de catálogo: marfim e branco, azul-marinho e dourado.
-   Títulos em serifa (Playfair Display), texto e preços em DM Sans, cartões brancos de marketplace.
-   Remapeia a paleta neutra do Tailwind (zinc/stone/gray...) para tons de papel e tinta,
-   então qualquer página que use `bg-zinc-900`, `border-zinc-300` etc. já herda o visual.
+/* Tema "biblioteca" — dark mode azul meia-noite.
+   Fonte única de cor: as variáveis abaixo. Sem amarelo e sem preto puro.
+   Regra 60-30-10: bg/bg-alt/card dominam, ink/muted para texto, accent só em ação principal, selos e estados ativos.
+   Títulos em Poppins, texto e preços em DM Sans.
+
+   Tailwind v4: os tokens viram utilitários via @theme (bg-bg, bg-card, bg-card-hover, text-ink,
+   text-muted, bg-accent, border-border). Texto sobre fundo accent é sempre text-bg.
+   Dois tons por seção: [data-tone="dark"] (padrão) e [data-tone="light"] (+ data-surface="alt" para fundo branco).
    O painel /admin marca a si mesmo com data-admin e mantém o visual original.
 
-   As variáveis --z-* e as classes .z-* no fim do arquivo são apelidos do tema anterior: servem só
-   para as telas que ainda não foram migradas. Código novo usa --bk-* e .bk-*. */
+   As variáveis --bk-* / --z-* e as classes .bk-* / .z-* no fim são apelidos dos temas anteriores:
+   servem só às telas que ainda não foram redesenhadas. */
+
+/* Temas por seção: `data-tone="dark"` ou `data-tone="light"` num wrapper/<section> troca as variáveis
+   daquela seção. Fora disso vale o escuro. Componentes só leem as variáveis (sem hex solto). */
+:root,
+[data-tone="dark"] {
+  --bg: #11151f;
+  --bg-alt: #151a26;        /* seções alternadas: um degrau acima do bg */
+  --card: #1a2030;
+  --card-2: #161c2a;        /* fim do gradiente dos cards */
+  --card-hover: #232b3f;
+  --footer: #0d1018;        /* rodapé: o ponto mais escuro, fecha a página */
+  --ink: #f1f3f9;
+  --muted: #a3abc0;         /* nunca abaixo disto (contraste AA) */
+  --accent: #8b9aff;
+  --on-accent: #0a0d14;      /* texto sobre fundo accent */
+  --border: rgb(255 255 255 / 0.1);
+  --border-strong: rgb(255 255 255 / 0.2); /* só para campos de formulário (contraste de interface) */
+  --shadow-card: none;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
+  --color-footer: var(--footer);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-on-image: var(--on-image);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+}
+
+/* Texto sobre imagem (faixa escura que fica por cima das capas): igual nos dois tons */
+:root { --on-image: #f1f3f9; }
+
+/* Tema claro */
+[data-tone="light"] {
+  --bg: #f5f6fa;
+  --bg-alt: #ffffff;
+  --card: #ffffff;
+  --card-2: #ffffff;
+  --card-hover: #eef0f8;
+  --ink: #12162b;
+  --muted: #5b6279;
+  --accent: #4453d6;
+  --on-accent: #ffffff;
+  --border: rgb(18 22 43 / 0.1);
+  --border-strong: rgb(18 22 43 / 0.28);
+  --shadow-card: 0 1px 2px rgb(18 22 43 / 0.06), 0 8px 24px rgb(18 22 43 / 0.06);
+  color-scheme: light;
+}
+/* Seções claras consecutivas alternam #F5F6FA e #FFFFFF, sem borda entre elas */
+[data-tone="light"][data-surface="alt"] {
+  --bg: #ffffff;
+  --card-hover: #f5f6fa;
+}
+[data-tone="dark"] { color-scheme: dark; }
+[data-tone] {
+  background-color: var(--bg);
+  color: var(--ink);
+}
 
 :root[data-theme="biblioteca"] {
-  /* ── Tokens do tema: marfim, branco, azul-marinho e dourado ── */
-  --bk-paper: #f5f1e6;      /* fundo da página (marfim) */
-  --bk-paper-2: #ebe4d1;    /* marfim mais fundo: áreas de imagem, divisões */
-  --bk-white: #ffffff;
-  --bk-card: #ffffff;
-  --bk-ink: #1b1f2a;
-  --bk-ink-soft: #55596b;
-  --bk-line: #ddd6c3;
-  --bk-navy: #14284b;
-  --bk-navy-2: #1d3a6b;
-  --bk-navy-3: #0d1c36;
-  --bk-gold: #c8962e;
-  --bk-gold-light: #e3c27a;
-  --bk-gold-pale: #f6ecd0;
-  --bk-red: #b3261e;
-  --bk-green: #0f8a4b;      /* só para "% off" e "frete grátis" */
-
-  --font-display: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  --font-display: var(--font-poppins), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-body: var(--font-dm-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-hand: var(--font-playfair), Georgia, serif;
+  --font-hand: var(--font-poppins), system-ui, sans-serif;
 
-  /* ── Apelidos do tema anterior (telas ainda não migradas) ── */
-  --z-paper: var(--bk-paper);
-  --z-paper-2: var(--bk-paper-2);
-  --z-ink: var(--bk-ink);
-  --z-red: var(--bk-red);
-  --z-yellow: var(--bk-gold-light);
-  --z-pink: #eadfc6;
-  --z-blue: var(--bk-navy);
-  --z-green: #d9e5d2;
-  --z-lilac: #dfe3ef;
+  /* ── Apelidos dos temas anteriores, apontando para a paleta nova ── */
+  --bk-paper: var(--bg);
+  --bk-paper-2: var(--card-hover);
+  --bk-white: var(--card);
+  --bk-card: var(--card);
+  --bk-ink: var(--ink);
+  --bk-ink-soft: var(--muted);
+  --bk-line: var(--border);
+  --bk-navy: var(--card);
+  --bk-navy-2: var(--card-hover);
+  --bk-navy-3: var(--bg);
+  --bk-gold: var(--accent);
+  --bk-gold-light: var(--accent);
+  --bk-gold-pale: var(--card-hover);
+  --bk-gold-dark: var(--accent);
+  --bk-red: #ff7a8a;
+  --bk-green: #5fd3a2;
+  --z-paper: var(--bg);
+  --z-paper-2: var(--card-hover);
+  --z-ink: var(--ink);
+  --z-red: #ff7a8a;
+  --z-yellow: var(--accent);
+  --z-pink: var(--card-hover);
+  --z-blue: var(--accent);
+  --z-green: var(--card);
+  --z-lilac: var(--card-hover);
 
-  /* ── Raios: cantos suaves de loja online ── */
+  /* ── Raios ── */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
-  --radius-xl: 10px;
-  --radius-2xl: 14px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
 
-  /* ── Paleta neutra do Tailwind → marfim, tinta e azul-marinho ── */
-  --color-white: #ffffff;
-  --color-black: #1b1f2a;
-  --color-zinc-50: #f8f5ec;
-  --color-zinc-100: #f0ebdc;
-  --color-zinc-200: #e3dcc8;
-  --color-zinc-300: #cfc8b4;
-  --color-zinc-400: #7b8194;
-  --color-zinc-500: #5d6376;
-  --color-zinc-600: #474c5e;
-  --color-zinc-700: #343949;
-  --color-zinc-800: #262a38;
-  --color-zinc-900: #14284b;
-  --color-zinc-950: #0d1c36;
+  /* ── Neutros do Tailwind → escala escura (telas ainda não redesenhadas herdam o dark) ── */
+  --color-white: #1a2030;
+  --color-black: #11151f;
+  --color-zinc-50: #1a2030;
+  --color-zinc-100: #232b3f;
+  --color-zinc-200: #2d3650;
+  --color-zinc-300: #3a4560;
+  --color-zinc-400: #a3abc0;
+  --color-zinc-500: #adb5c8;
+  --color-zinc-600: #bcc3d4;
+  --color-zinc-700: #cfd4e1;
+  --color-zinc-800: #e0e4ee;
+  --color-zinc-900: #f1f3f9;
+  --color-zinc-950: #fafbfd;
   --color-stone-50: var(--color-zinc-50);
   --color-stone-100: var(--color-zinc-100);
   --color-stone-200: var(--color-zinc-200);
@@ -102,13 +169,13 @@
   --color-slate-700: var(--color-zinc-700);
   --color-slate-800: var(--color-zinc-800);
   --color-slate-900: var(--color-zinc-900);
-  /* barra de frete grátis do carrinho: dourado */
-  --color-sky-50: #fbf3da;
-  --color-sky-100: #f6e4ae;
-  --color-sky-200: #e3c27a;
-  --color-sky-500: #c8962e;
-  --color-sky-600: #b0831f;
-  --color-sky-700: #8a6414;
+  /* barra de frete grátis do carrinho: accent */
+  --color-sky-50: #1a2030;
+  --color-sky-100: #232b3f;
+  --color-sky-200: #3f4a7a;
+  --color-sky-500: #8b9aff;
+  --color-sky-600: #7b8bf5;
+  --color-sky-700: #aeb8ff;
 }
 
 /* O painel /admin mantém o visual original (ele marca a si mesmo com data-admin). */
@@ -182,23 +249,24 @@
 
 /* ── Base ── */
 :root[data-theme="biblioteca"]:not(:has([data-admin])) body {
-  background-color: var(--bk-paper);
-  color: var(--bk-ink);
+  background-color: var(--bg);
+  color: var(--ink);
   font-family: var(--font-body);
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-:root[data-theme="biblioteca"] ::selection {
-  background: var(--bk-gold-light);
-  color: var(--bk-ink);
+:root[data-theme="biblioteca"]:not(:has([data-admin])) ::selection {
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
-/* Títulos grandes em serifa; os pequenos (formulários, cartões) ficam na fonte do corpo. */
+/* Títulos grandes em Poppins; os pequenos (formulários, cartões) ficam na fonte do corpo. */
 :root[data-theme="biblioteca"]:not(:has([data-admin])) :is(h1, h2, h3):not([class*="text-base"]):not([class*="text-sm"]):not([class*="text-xs"]):not([class*="text-lg"]):not(.z-plain) {
   font-family: var(--font-display);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   line-height: 1.12;
 }
 :root[data-theme="biblioteca"] main h1.text-xl {
@@ -206,218 +274,199 @@
   line-height: 1.15;
 }
 
-/* Botões e links preenchidos de escuro: azul-marinho. */
+/* Botões e links preenchidos de "escuro" nas telas antigas viram o botão principal: accent com texto escuro. */
 :root[data-theme="biblioteca"]:not(:has([data-admin])) :is(button, a).bg-zinc-900 {
-  background-color: var(--bk-navy);
-  color: #fff;
-  border-radius: 6px;
+  background-color: var(--accent);
+  color: var(--on-accent);
+  border-radius: 8px;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.18s ease, transform 0.18s ease;
 }
 :root[data-theme="biblioteca"]:not(:has([data-admin])) :is(button, a).bg-zinc-900:hover:not(:disabled) {
-  background-color: var(--bk-navy-2);
+  background-color: color-mix(in srgb, var(--accent), var(--ink) 14%);
 }
 :root[data-theme="biblioteca"]:not(:has([data-admin])) :is(button, a).bg-zinc-900:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
 }
 
-/* Campos: traço fino, fundo branco, foco azul com halo dourado. */
+/* Campos de formulário */
 :root[data-theme="biblioteca"]:not(:has([data-admin])) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
-  border-width: 1px;
-  border-color: var(--color-zinc-300);
-  background-color: #fff;
-  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--card);
+  color: var(--ink);
+  border-radius: 8px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 :root[data-theme="biblioteca"]:not(:has([data-admin])) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus {
   outline: none;
-  border-color: var(--bk-navy);
-  box-shadow: 0 0 0 3px rgb(200 150 46 / 0.3);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(139 154 255 / 0.3);
 }
 :root[data-theme="biblioteca"] input::placeholder,
 :root[data-theme="biblioteca"] textarea::placeholder {
-  color: #8b8f9e;
+  color: var(--muted);
 }
 :root[data-theme="biblioteca"] input[type="checkbox"],
 :root[data-theme="biblioteca"] input[type="radio"] {
-  accent-color: var(--bk-navy);
+  accent-color: var(--accent);
 }
 
 /* Foco visível no teclado */
 :root[data-theme="biblioteca"] :focus-visible {
-  outline: 2px solid var(--bk-navy-2);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* ── Utilitários do tema (usados pelos componentes) ── */
-.bk-display {
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  line-height: 1.12;
-  text-wrap: balance;
-}
-.bk-italic { font-family: var(--font-display); font-style: italic; font-weight: 400; }
-
-/* Sobretítulo */
-.bk-eyebrow {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--bk-gold);
-}
-
-/* Filetes */
-.bk-rule { border: 0; border-top: 1px solid var(--bk-line); }
-.bk-rule-double { border: 0; border-top: 4px double var(--bk-navy); }
-.bk-rule-gold { border: 0; border-top: 1px solid var(--bk-gold); }
-
-.bk-ornament {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  color: var(--bk-gold);
-  font-size: 0.9rem;
-}
-.bk-ornament::before,
-.bk-ornament::after {
-  content: '';
-  height: 1px;
-  flex: 1;
-  background: linear-gradient(90deg, transparent, var(--bk-gold), transparent);
-}
-
-.bk-frame {
-  border: 1px solid var(--bk-line);
-  border-radius: 10px;
-  background: var(--bk-white);
-}
-
-/* Cartão branco de marketplace */
-.bk-card {
-  background: var(--bk-white);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgb(20 40 75 / 0.14);
-}
-.bk-card-hover { transition: box-shadow 0.2s ease; }
-.bk-card-hover:hover { box-shadow: 0 6px 18px rgb(20 40 75 / 0.18); }
-
-/* Capa do livro com lombada */
-.bk-cover {
-  position: relative;
-  background: var(--bk-paper-2);
-  border-radius: 2px 4px 4px 2px;
-  box-shadow: 0 1px 2px rgb(20 40 75 / 0.3), 0 10px 16px -8px rgb(20 40 75 / 0.45);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.bk-cover::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgb(0 0 0 / 0.2) 0, rgb(255 255 255 / 0.18) 3%, rgb(0 0 0 / 0.05) 6%, transparent 12%);
-  pointer-events: none;
-}
-.bk-lift:hover .bk-cover {
-  transform: translateY(-3px);
-  box-shadow: 0 2px 3px rgb(20 40 75 / 0.3), 0 16px 22px -8px rgb(20 40 75 / 0.5);
-}
-
-/* Botões */
-.bk-btn {
+/* ── Componentes do tema novo ── */
+.btn-primary,
+.btn-outline {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.8rem 1.5rem;
-  background: var(--bk-navy);
-  color: #fff;
-  border: 1px solid var(--bk-navy);
-  border-radius: 6px;
+  min-height: 44px;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
   font-family: var(--font-body);
   font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.1;
   white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
-.bk-btn:hover { background: var(--bk-navy-2); border-color: var(--bk-navy-2); }
-.bk-btn--gold { background: var(--bk-gold); border-color: var(--bk-gold); color: #fff; }
-.bk-btn--gold:hover { background: #b0831f; border-color: #b0831f; }
-.bk-btn--soft { background: var(--bk-gold-pale); border-color: var(--bk-gold-pale); color: var(--bk-navy); }
-.bk-btn--soft:hover { background: #efe0b4; border-color: #efe0b4; }
-.bk-btn--outline { background: transparent; color: var(--bk-navy); border-color: var(--bk-navy); }
-.bk-btn--outline:hover { background: var(--bk-navy); color: #fff; }
-.bk-btn--burgundy { background: var(--bk-red); border-color: var(--bk-red); }
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent);
+}
+.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accent), var(--ink) 14%); border-color: color-mix(in srgb, var(--accent), var(--ink) 14%); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-outline {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+}
+.btn-outline:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.bk-link { color: var(--bk-navy-2); }
-.bk-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.chip:hover { background: var(--card-hover); border-color: var(--accent); }
+.chip[aria-current="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
-.bk-dropcap::first-letter {
-  font-family: var(--font-display);
-  font-weight: 700;
-  float: left;
-  font-size: 4em;
-  line-height: 0.85;
-  padding: 0.05em 0.1em 0 0;
-  color: var(--bk-navy);
+/* Cartão: profundidade por cor, não por sombra */
+.surface {
+  background: linear-gradient(180deg, var(--card), var(--card-2));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.surface-lift:hover { background: var(--card-hover); border-color: var(--border-strong); }
+
+/* Brilho radial suave atrás das capas do hero */
+.hero-glow {
+  background: radial-gradient(circle at 70% 30%, rgb(139 154 255 / 0.18), transparent 60%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .surface-lift:hover { transform: translateY(-2px); }
 }
 
-.bk-noscroll { scrollbar-width: none; -ms-overflow-style: none; }
-.bk-noscroll::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
-@keyframes bk-rise {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
+/* Mostruário 3D do hero: o anel gira 360° e cada capa contra-gira para ficar sempre de frente.
+   --spin = duração de uma volta completa (45s: calmo; com 5 livros, um novo livro à frente a cada 9s). */
+.carousel3d {
+  --spin: 45s;
+  perspective: 1500px;
 }
-.bk-rise { animation: bk-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.carousel3d-ring {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  animation: carousel3d-spin var(--spin) linear infinite;
+}
+.carousel3d-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%) rotateY(calc(var(--a) * 1deg)) translateZ(var(--r));
+}
+.carousel3d-face {
+  transform-style: preserve-3d;
+  animation: carousel3d-face var(--spin) linear infinite;
+}
+.carousel3d:hover .carousel3d-ring,
+.carousel3d:hover .carousel3d-face { animation-play-state: paused; }
+@keyframes carousel3d-spin { to { transform: rotateY(360deg); } }
+@keyframes carousel3d-face {
+  from { transform: rotateY(calc(var(--a) * -1deg)); }
+  to { transform: rotateY(calc(var(--a) * -1deg - 360deg)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .carousel3d-ring, .carousel3d-face { animation: none; }
+  .carousel3d-face { transform: rotateY(calc(var(--a) * -1deg)); }
+}
 
-/* ── Apelidos do tema anterior (.z-*): mantêm as telas ainda não migradas coerentes ── */
-.z-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; text-wrap: balance; }
+/* ── Apelidos dos temas anteriores (.bk-* / .z-*) para telas ainda não redesenhadas ── */
+.bk-display, .z-display { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; text-wrap: balance; }
 h1.z-display, h2.z-display { padding-top: 0.04em; }
-.z-hand { font-family: var(--font-display); font-style: italic; font-weight: 400; line-height: 1.2; }
+.bk-italic, .z-hand { font-family: var(--font-display); font-style: italic; font-weight: 400; line-height: 1.2; }
 .z-body { font-family: var(--font-body); }
-.z-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 2px rgb(20 40 75 / 0.14); }
-.z-btn {
+.bk-eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.bk-card, .z-card, .bk-frame { background: linear-gradient(180deg, var(--card), var(--card-2)); border: 1px solid var(--border); border-radius: 12px; }
+.bk-card-hover { transition: background-color 0.2s ease; }
+.bk-card-hover:hover { background: var(--card-hover); }
+.bk-cover { position: relative; background: var(--card-hover); border-radius: 6px; }
+.bk-link { color: var(--accent); }
+.bk-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.bk-btn, .z-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-  padding: 0.8rem 1.5rem; background: var(--bk-gold); color: #fff;
-  border: 1px solid var(--bk-gold); border-radius: 6px;
-  font-family: var(--font-body); font-size: 0.9rem; font-weight: 600; line-height: 1.1;
-  white-space: nowrap; transition: background-color 0.15s ease;
+  min-height: 44px; padding: 0.7rem 1.4rem; background: var(--accent); color: var(--on-accent);
+  border: 1px solid var(--accent); border-radius: 10px; font-family: var(--font-body);
+  font-size: 0.9rem; font-weight: 600; line-height: 1.1; white-space: nowrap;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
-.z-btn:hover { background: #b0831f; }
-.z-btn--red { background: var(--bk-navy); border-color: var(--bk-navy); color: #fff; }
-.z-btn--red:hover { background: var(--bk-navy-2); }
-.z-btn--pink, .z-btn--green { background: var(--bk-gold-pale); border-color: var(--bk-gold-pale); color: var(--bk-navy); }
-.z-btn--blue, .z-btn--ink { background: var(--bk-navy); border-color: var(--bk-navy); color: #fff; }
-.z-btn--blue:hover, .z-btn--ink:hover { background: var(--bk-navy-2); }
-.z-btn--paper { background: #fff; border-color: var(--bk-navy); color: var(--bk-navy); }
-.z-btn--paper:hover { background: var(--bk-gold-pale); }
-.z-sticker {
-  display: inline-block; padding: 0.2rem 0.5rem; background: var(--bk-gold-pale); color: var(--bk-navy);
-  border-radius: 3px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; line-height: 1.2; white-space: nowrap;
-}
-.z-mark { background: linear-gradient(transparent 62%, rgb(227 194 122 / 0.7) 62%); padding: 0 0.08em; margin: 0 -0.08em; }
-.z-wavy { text-decoration: underline; text-decoration-color: var(--bk-gold); text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+.bk-btn:hover, .z-btn:hover { background: color-mix(in srgb, var(--accent), var(--ink) 14%); border-color: color-mix(in srgb, var(--accent), var(--ink) 14%); }
+.bk-btn--outline, .z-btn--paper, .z-btn--pink, .z-btn--green { background: transparent; color: var(--ink); border-color: var(--border-strong); }
+.bk-btn--outline:hover, .z-btn--paper:hover, .z-btn--pink:hover, .z-btn--green:hover { background: transparent; border-color: var(--accent); color: var(--accent); }
+.bk-btn--soft { background: var(--card-hover); border-color: var(--card-hover); color: var(--ink); }
+.bk-btn--soft:hover { background: var(--card-hover); border-color: var(--card-hover); }
+.z-btn--red, .z-btn--blue, .z-btn--ink, .bk-btn--gold, .bk-btn--burgundy { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.z-sticker { display: inline-block; padding: 0.15rem 0.5rem; background: var(--accent); color: var(--on-accent); border-radius: 6px; font-size: 0.68rem; font-weight: 700; line-height: 1.3; white-space: nowrap; }
+.z-mark { background: linear-gradient(transparent 62%, rgb(139 154 255 / 0.35) 62%); padding: 0 0.08em; margin: 0 -0.08em; }
+.z-wavy { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
 .z-halftone, .z-halftone--light, .z-lines { background-image: none; }
+.z-lift { transition: transform 0.2s ease; }
+.z-lift:hover { transform: translateY(-2px); }
+.z-noscroll, .bk-noscroll { scrollbar-width: none; -ms-overflow-style: none; }
+.z-noscroll::-webkit-scrollbar, .bk-noscroll::-webkit-scrollbar { display: none; }
 @keyframes z-marquee { to { transform: translateX(-50%); } }
 .z-marquee-track { display: flex; width: max-content; animation: z-marquee 40s linear infinite; }
-.z-marquee:hover .z-marquee-track { animation-play-state: paused; }
 .z-marquee--slow .z-marquee-track { animation-duration: 60s; }
 @keyframes z-spin { to { transform: rotate(360deg); } }
 .z-spin { animation: z-spin 24s linear infinite; }
-.z-pop { animation: bk-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.z-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.z-lift:hover { transform: translateY(-3px); }
-.z-noscroll { scrollbar-width: none; -ms-overflow-style: none; }
-.z-noscroll::-webkit-scrollbar { display: none; }
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.rise, .bk-rise, .z-pop { animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
   :root[data-theme="biblioteca"] { scroll-behavior: auto; }
-  .bk-rise, .z-pop, .z-marquee-track, .z-spin { animation: none; }
-  .bk-lift:hover .bk-cover, .z-lift:hover { transform: none; }
+  .rise, .bk-rise, .z-pop, .z-marquee-track, .z-spin { animation: none; }
   :root[data-theme="biblioteca"] *,
   :root[data-theme="biblioteca"] *::before,
   :root[data-theme="biblioteca"] *::after {

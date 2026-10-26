@@ -17,30 +17,36 @@ export default function FaqSection() {
   const [open, setOpen] = useState<number | null>(0)
 
   return (
-    <section id="duvidas" className="scroll-mt-32 px-4 py-14 sm:px-6">
-      <div className="mx-auto max-w-[900px]">
-        <h2 className="z-plain mb-6 text-2xl font-semibold">Perguntas frequentes</h2>
+    <section id="duvidas" className="mx-auto max-w-[760px] scroll-mt-6 px-4 py-12 md:py-16" aria-labelledby="faq-titulo">
+      <div className="mb-8 text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Atendimento</p>
+        <h2 id="faq-titulo" className="mt-1.5 text-3xl text-ink md:text-4xl">Perguntas frequentes</h2>
+      </div>
 
-        <div className="bk-card divide-y divide-[var(--bk-paper-2)] overflow-hidden">
-          {faqs.map((faq, i) => {
-            const isOpen = open === i
-            return (
-              <div key={faq.q}>
+      <div className="divide-y divide-border border-y border-border">
+        {faqs.map((faq, i) => {
+          const isOpen = open === i
+          const panelId = `faq-panel-${i}`
+          return (
+            <div key={faq.q}>
+              <h3 className="z-plain">
                 <button
+                  type="button"
                   onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left transition-colors hover:bg-[var(--bk-paper)]/60"
+                  aria-controls={panelId}
+                  className="flex w-full items-center justify-between gap-6 py-5 text-left text-base font-medium text-ink transition-colors hover:text-accent"
                 >
-                  <span className={`text-base font-medium ${isOpen ? 'text-[var(--bk-navy-2)]' : ''}`}>{faq.q}</span>
-                  <svg className={`h-5 w-5 flex-shrink-0 text-[var(--bk-ink-soft)] transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  {faq.q}
+                  <svg className={`h-5 w-5 shrink-0 text-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {isOpen && <p className="px-6 pb-6 pr-14 text-[15px] leading-relaxed text-[var(--bk-ink-soft)]">{faq.a}</p>}
-              </div>
-            )
-          })}
-        </div>
+              </h3>
+              {isOpen && <p id={panelId} className="pb-6 pr-10 text-[15px] leading-relaxed text-muted">{faq.a}</p>}
+            </div>
+          )
+        })}
       </div>
     </section>
   )

@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { use } from 'react'
 import { notFound } from 'next/navigation'
-import { supabaseAdmin as supabase, mapProduct } from '@/lib/supabase'
+import { mockProducts } from '@/lib/data/products'
 import { Product, FilterState } from '@/lib/types'
 import { ProductGrid, ProductFilters } from '@/components/product'
 import { PageHero } from '@/components/zine'
@@ -28,8 +28,8 @@ export default function SecaoPage({ params }: { params: Promise<{ section: strin
   const meta = sectionBySlug(section)
   if (!meta) notFound()
 
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const products = mockProducts.filter((product) => product.section?.includes(section))
+  const loading = false
   const [filters, setFilters] = useState<FilterState>(defaultFilters)
   const [filtersVisible, setFiltersVisible] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
@@ -40,14 +40,6 @@ export default function SecaoPage({ params }: { params: Promise<{ section: strin
   const [aiResults, setAiResults] = useState<Product[] | null>(null)
   const [aiLoading, setAiLoading] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    supabase.from('products').select('*').contains('section', [section]).then(({ data, error }) => {
-      if (error) console.error('[Supabase] section:', error)
-      setProducts((data ?? []).map(mapProduct))
-      setLoading(false)
-    })
-  }, [section])
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

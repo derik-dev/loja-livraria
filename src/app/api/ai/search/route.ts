@@ -8,8 +8,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ products })
   }
 
-  const productList = products.map((p: { id: string; name: string; category: string; tags: string[]; description: string }) =>
-    `ID: ${p.id} | Nome: ${p.name} | Categoria: ${p.category} | Tags: ${(p.tags ?? []).join(', ')} | Descrição: ${p.description}`
+  const productList = products.map((p: { id: string; name: string; author?: string; category: string; tags: string[]; description: string }) =>
+    `ID: ${p.id} | Nome: ${p.name}${p.author ? ' | Autor: ' + p.author : ''} | Categoria: ${p.category} | Tags: ${(p.tags ?? []).join(', ')} | Descrição: ${p.description}`
   ).join('\n')
 
   const prompt = `Você é o assistente de busca de uma livraria online. O usuário descreveu o que procura (pode ser um título, tema, clima ou ocasião): "${query}".

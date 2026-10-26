@@ -2,7 +2,7 @@
 
 import { useState, use, useEffect, type ReactNode } from 'react'
 import Link from 'next/link'
-import { supabaseAdmin as supabase, mapProduct } from '@/lib/supabase'
+import { getMockCategoryLabel, getMockProductBySlug, mockProducts } from '@/lib/data/products'
 import { Product } from '@/lib/types'
 import { formatCurrency, calculateDiscount } from '@/lib/utils'
 import { useCartStore } from '@/store/cartStore'
@@ -82,28 +82,39 @@ export default function ProductPage({ params }: ProductPageProps) {
   const { user, openAuthModal } = useAuth()
 
   useEffect(() => {
-    supabase.from('products').select('*').eq('slug', slug).single().then(({ data }) => {
-      if (!data) { setLoading(false); return }
-      const p = mapProduct(data)
+    let active = true
+
+    async function loadMockProduct() {
+      await Promise.resolve()
+      const p = getMockProductBySlug(slug)
+      if (!active) return
+      if (!p) {
+        setLoading(false)
+        return
+      }
+
       setProduct(p)
-      supabase.from('products').select('*').eq('category', p.category).neq('slug', slug).limit(3)
-        .then(({ data: rel }) => setRelated((rel ?? []).map(mapProduct)))
+      setRelated(mockProducts.filter((item) => item.category === p.category && item.slug !== slug).slice(0, 3))
       setLoading(false)
-      // Recomendações por IA
       setAiRecsLoading(true)
-      supabase.from('products').select('*').then(({ data: all }) => {
-        const allMapped = (all ?? []).map(mapProduct)
-        fetch('/api/ai/recommendations', {
+
+      try {
+        const response = await fetch('/api/ai/recommendations', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ currentProduct: p, allProducts: allMapped }),
+          body: JSON.stringify({ currentProduct: p, allProducts: mockProducts }),
         })
-          .then((r) => r.json())
-          .then((d) => setAiRecs(d.products ?? []))
-          .catch(() => {})
-          .finally(() => setAiRecsLoading(false))
-      })
-    })
+        const data = await response.json()
+        if (active) setAiRecs(data.products ?? [])
+      } catch {
+        // As recomendações são complementares; a página continua com os dados mock.
+      } finally {
+        if (active) setAiRecsLoading(false)
+      }
+    }
+
+    void loadMockProduct()
+    return () => { active = false }
   }, [slug])
 
   if (loading) return (
@@ -161,7 +172,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           <span className="mx-2 text-[var(--z-red)]">✶</span>
           <Link href="/produtos" className="hover:underline">Livros</Link>
           <span className="mx-2 text-[var(--z-red)]">✶</span>
-          <span className="text-zinc-500">{product.category}</span>
+          <span className="text-zinc-500">{getMockCategoryLabel(product.category)}</span>
         </p>
       </div>
 
@@ -184,6 +195,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
 
           <h1 className="text-xl">{product.name}</h1>
+          {product.author && <p className="mt-2 text-sm text-zinc-600">por {product.author}</p>}
 
           <div className="mt-6 flex items-baseline gap-3 border-y-[3px] border-[var(--z-ink)] py-5">
             <span className="z-display text-5xl">{formatCurrency(product.price)}</span>
@@ -201,7 +213,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                   aria-pressed={s === selectedSize}
                   className="border-[3px] border-[var(--z-ink)] px-4 py-2 text-sm font-bold transition-all hover:-translate-y-0.5"
                   style={{
-                    background: s === selectedSize ? 'var(--z-yellow)' : '#fffdf6',
+                    background: s === selectedSize ? 'var(--accent)' : 'var(--card)',
+                    color: s === selectedSize ? 'var(--bg)' : 'var(--ink)',
                     boxShadow: s === selectedSize ? '4px 4px 0 var(--z-ink)' : 'none',
                   }}
                 >
@@ -234,7 +247,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           {/* Quantidade */}
           <div className="mt-6">
             <span className={label}>Quantidade</span>
-            <div className="inline-flex items-center border-[3px] border-[var(--z-ink)] bg-[#fffdf6]">
+            <div className="inline-flex items-center border-[3px] border-[var(--z-ink)] bg-card">
               <button
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 aria-label="Diminuir"
@@ -311,7 +324,7 @@ export default function ProductPage({ params }: ProductPageProps) {
               </button>
             </div>
             {shippingResult && (
-              <div className="mt-3 divide-y-2 divide-[var(--z-ink)] border-[3px] border-[var(--z-ink)] bg-[#fffdf6]">
+              <div className="mt-3 divide-y-2 divide-[var(--z-ink)] border-[3px] border-[var(--z-ink)] bg-card">
                 {shippingResult.map((opt) => (
                   <div key={opt.label} className="flex items-center justify-between px-3 py-2.5 text-sm">
                     <span><strong>{opt.label}</strong> <span className="text-zinc-500">· {opt.days}</span></span>
@@ -323,7 +336,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Detalhes */}
-          <div className="mt-10 border-[3px] border-[var(--z-ink)] bg-[#fffdf6] px-5 shadow-[7px_7px_0_var(--z-ink)]">
+          <div className="mt-10 border-[3px] border-[var(--z-ink)] bg-card px-5 shadow-[7px_7px_0_var(--z-ink)]">
             <AccordionItem title="Sobre o livro" defaultOpen>
               <p className="whitespace-pre-line text-[15px] font-medium leading-relaxed">{product.description || 'Em breve, mais detalhes sobre este livro.'}</p>
             </AccordionItem>
@@ -340,7 +353,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             <AccordionItem title="Ficha técnica">
               <dl className="divide-y-2 divide-dashed divide-[var(--z-ink)]/30 text-sm">
                 {[
-                  ['Gênero', product.category],
+                  ['Gênero', getMockCategoryLabel(product.category)],
                   ['Nota', product.reviewCount > 0 ? `${product.rating} / 5` : 'ainda sem avaliações'],
                   ['Estoque', product.stock > 0 ? `${product.stock} unidades` : 'esgotado'],
                   ['Referência', `REF-${product.id.padStart(5, '0')}`],

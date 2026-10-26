@@ -7,6 +7,7 @@ export interface Product {
   id: string
   slug: string
   name: string
+  author?: string
   description: string
   price: number
   originalPrice?: number

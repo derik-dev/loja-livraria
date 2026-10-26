@@ -1,10 +1,11 @@
-// Encadernações em tecido: verde-garrafa, bordô, azul-marinho, ocre e castanho.
+import Image from 'next/image'
+
+// Capas geradas para livros ainda sem foto: só cores do tema.
 const BINDINGS = [
-  { bg: '#1e3d2f', fg: '#e8d9a8', accent: '#d9bf7a' },
-  { bg: '#6e1f2c', fg: '#f3e6c4', accent: '#d9bf7a' },
-  { bg: '#24405f', fg: '#efe3c0', accent: '#d9bf7a' },
-  { bg: '#8a6a2c', fg: '#f6ecd0', accent: '#f0dc9c' },
-  { bg: '#3b2a22', fg: '#e9d9b0', accent: '#c9a45c' },
+  { bg: 'var(--card-hover)', fg: 'var(--ink)', line: 'var(--accent)' },
+  { bg: 'var(--accent)', fg: 'var(--on-accent)', line: 'var(--on-accent)' },
+  { bg: 'var(--card)', fg: 'var(--ink)', line: 'var(--muted)' },
+  { bg: 'var(--ink)', fg: 'var(--bg)', line: 'var(--accent)' },
 ]
 
 function pick(title: string) {
@@ -23,34 +24,71 @@ export function BookCover({ title, className = '' }: { title: string; className?
       role="img"
       aria-label={`Capa de ${title}`}
     >
-      {/* moldura dourada */}
-      <div className="pointer-events-none absolute inset-[5%] border" style={{ borderColor: c.accent }} aria-hidden="true" />
-      <div className="pointer-events-none absolute inset-[6.5%] border" style={{ borderColor: c.accent, opacity: 0.45 }} aria-hidden="true" />
-      <span className="relative text-[clamp(0.5rem,5cqw,0.9rem)]" style={{ color: c.accent }} aria-hidden="true">✦</span>
+      <div className="pointer-events-none absolute inset-[5%] rounded-sm border" style={{ borderColor: c.line, opacity: 0.6 }} aria-hidden="true" />
+      <span className="relative text-[clamp(0.5rem,5cqw,0.9rem)]" style={{ color: c.line }} aria-hidden="true">✦</span>
       <span
         className="bk-display relative text-[clamp(0.8rem,9cqw,1.5rem)] leading-[1.12] [overflow-wrap:anywhere]"
         style={{ fontWeight: 600 }}
       >
         {title}
       </span>
-      <span className="relative text-[clamp(0.45rem,4cqw,0.7rem)] uppercase tracking-[0.3em]" style={{ color: c.accent }}>
+      <span className="relative text-[clamp(0.45rem,4cqw,0.7rem)] uppercase tracking-[0.3em]" style={{ color: c.line }}>
         Papelada
       </span>
     </div>
   )
 }
 
-/** Foto do livro ou, se não houver, a capa gerada. Preenche o contêiner pai. */
+// Hosts liberados em next.config.ts; qualquer outro remoto é servido sem otimização para não quebrar.
+function isOptimizable(src: string) {
+  if (src.startsWith('/')) return true
+  try {
+    const host = new URL(src).hostname
+    return host === 'images.unsplash.com' || host.endsWith('.supabase.co')
+  } catch {
+    return false
+  }
+}
+
+/** Foto do livro (next/image) ou, se não houver, a capa gerada. Preenche o contêiner pai. */
 export function BookImage({
   src,
   title,
-  className = 'h-full w-full object-cover',
+  className = 'object-cover',
+  sizes = '(min-width: 1024px) 240px, 45vw',
+  priority = false,
 }: {
   src?: string
   title: string
   className?: string
+  sizes?: string
+  priority?: boolean
 }) {
   if (!src) return <BookCover title={title} />
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={title} className={className} />
+  return (
+    <span
+      className="relative block h-full w-full overflow-hidden"
+      style={{ containerType: 'inline-size' }}
+      role="img"
+      aria-label={`Capa de ${title}`}
+    >
+      <Image
+        src={src}
+        alt=""
+        fill
+        sizes={sizes}
+        priority={priority}
+        unoptimized={!isOptimizable(src)}
+        className={className}
+      />
+      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-[9%] pb-[11%] pt-[35%] text-left text-on-image">
+        <span className="mb-[5%] block text-[clamp(0.4rem,4cqw,0.65rem)] font-semibold uppercase tracking-[0.2em] text-on-image/75">
+          Papelada · demonstração
+        </span>
+        <span className="bk-display block text-[clamp(0.7rem,9cqw,1.35rem)] font-semibold leading-[1.05] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] overflow-hidden">
+          {title}
+        </span>
+      </span>
+    </span>
+  )
 }

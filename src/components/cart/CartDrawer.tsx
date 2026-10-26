@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useCartStore } from '@/store/cartStore'
-import { supabaseAdmin as supabase, mapProduct } from '@/lib/supabase'
+import { mockProducts } from '@/lib/data/products'
 import { formatCurrency } from '@/lib/utils'
 import { FREE_SHIPPING_THRESHOLD } from '@/lib/brand'
 import { SECTIONS } from '@/lib/nav'
@@ -16,7 +16,7 @@ export default function CartDrawer() {
   const [mounted, setMounted] = useState(false)
   const [cepOpen, setCepOpen] = useState(false)
   const [cep, setCep] = useState('')
-  const [catalog, setCatalog] = useState<Product[]>([])
+  const catalog: Product[] = mockProducts
   const suggestRef = useRef<HTMLDivElement>(null)
 
   const items = useCartStore((s) => s.items)
@@ -34,14 +34,6 @@ export default function CartDrawer() {
     document.body.style.overflow = isOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [isOpen])
-
-  // Sugestões: carrega uma vez, na primeira vez que o carrinho abre
-  useEffect(() => {
-    if (!isOpen || catalog.length > 0) return
-    supabase.from('products').select('*').limit(12).then(({ data }) => {
-      if (data) setCatalog(data.map(mapProduct))
-    })
-  }, [isOpen, catalog.length])
 
   const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - total)
   const progress = Math.min(100, (total / FREE_SHIPPING_THRESHOLD) * 100)
@@ -83,14 +75,14 @@ export default function CartDrawer() {
           <button
             onClick={() => setIsOpen(false)}
             aria-label="Fechar carrinho"
-            className="flex h-10 w-10 items-center justify-center border-[2.5px] border-[var(--z-ink)] bg-[#fffdf6] text-xl font-bold hover:bg-[var(--z-pink)]"
+            className="flex h-10 w-10 items-center justify-center border-[2.5px] border-[var(--z-ink)] bg-card text-xl font-bold hover:bg-[var(--z-pink)]"
           >
             ×
           </button>
         </div>
 
         {/* Barra de frete grátis */}
-        <div className="border-b-[3px] border-[var(--z-ink)] bg-[#fffdf6] px-5 py-4">
+        <div className="border-b-[3px] border-[var(--z-ink)] bg-card px-5 py-4">
           <div className="relative h-4 border-[2.5px] border-[var(--z-ink)] bg-[var(--z-paper-2)]">
             <div
               className="absolute inset-y-0 left-0 bg-[var(--z-red)] transition-all duration-500"

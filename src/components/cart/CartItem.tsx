@@ -29,14 +29,14 @@ export default function CartItem({ item }: CartItemProps) {
           <button
             onClick={() => removeItem(item.product.id)}
             aria-label="Remover item"
-            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 border-[var(--z-ink)] bg-[#fffdf6] text-sm font-bold hover:bg-[var(--z-red)] hover:text-[#fff9ea]"
+            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border-2 border-[var(--z-ink)] bg-card text-sm font-bold hover:bg-[var(--z-red)] hover:text-[#fff9ea]"
           >
             ×
           </button>
         </div>
 
         <div className="mt-2 flex items-center justify-between">
-          <div className="inline-flex items-center border-2 border-[var(--z-ink)] bg-[#fffdf6]">
+          <div className="inline-flex items-center border-2 border-[var(--z-ink)] bg-card">
             <button
               onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
               aria-label="Diminuir quantidade"

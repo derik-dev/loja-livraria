@@ -6,6 +6,7 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY!
 interface Product {
   name: string
   slug: string
+  author?: string
   category: string
   price: number
   description?: string
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
     const productList = (products as Product[])
       .slice(0, 60)
       .map((p) =>
-        `- ${p.name} | slug:${p.slug} | ${p.category} | R$${p.price}${p.description ? ' | ' + p.description.slice(0, 80) : ''}${p.colors?.length ? ' | edições: ' + p.colors.map((c) => c.name).join(', ') : ''}${p.sizes?.length ? ' | formatos: ' + p.sizes.join(', ') : ''}`
+        `- ${p.name}${p.author ? ' | autor: ' + p.author : ''} | slug:${p.slug} | ${p.category} | R$${p.price}${p.description ? ' | ' + p.description.slice(0, 80) : ''}${p.colors?.length ? ' | edições: ' + p.colors.map((c) => c.name).join(', ') : ''}${p.sizes?.length ? ' | formatos: ' + p.sizes.join(', ') : ''}`
       )
       .join('\n')
 

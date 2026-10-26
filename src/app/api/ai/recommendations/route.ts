@@ -9,8 +9,8 @@ export async function POST(req: NextRequest) {
       .filter((p: { id: string }) => p.id !== currentProduct.id)
       .slice(0, 60)
 
-    const list = candidates.map((p: { id: string; name: string; category: string; price: number; description?: string }) =>
-      `ID:${p.id} | ${p.name} | categoria:${p.category} | R$${p.price}${p.description ? ' | ' + p.description.slice(0, 80) : ''}`
+    const list = candidates.map((p: { id: string; name: string; author?: string; category: string; price: number; description?: string }) =>
+      `ID:${p.id} | ${p.name}${p.author ? ' | autor: ' + p.author : ''} | categoria:${p.category} | R$${p.price}${p.description ? ' | ' + p.description.slice(0, 80) : ''}`
     ).join('\n')
 
     const prompt = `Você é um livreiro experiente, bom em indicar a próxima leitura. Um cliente está vendo este livro:

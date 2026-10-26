@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { FilterState } from '@/lib/types'
-import { supabaseAdmin as supabase } from '@/lib/supabase'
-import { fallbackCategories, type FilterCategory } from '@/lib/data/categories'
+import { mockCategories } from '@/lib/data/products'
 
 interface ProductFiltersProps {
   filters: FilterState
@@ -23,7 +22,7 @@ function Box({ checked }: { checked: boolean }) {
   return (
     <span
       className="flex h-5 w-5 flex-shrink-0 items-center justify-center border-[2.5px] border-[var(--z-ink)] transition-colors"
-      style={{ background: checked ? 'var(--z-yellow)' : '#fffdf6' }}
+      style={{ background: checked ? 'var(--z-yellow)' : 'var(--card)' }}
     >
       {checked && (
         <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 12 12">
@@ -38,19 +37,7 @@ export default function ProductFilters({ filters, onChange }: ProductFiltersProp
   const [localMin, setLocalMin] = useState(filters.minPrice?.toString() ?? '')
   const [localMax, setLocalMax] = useState(filters.maxPrice?.toString() ?? '')
   const [showMoreCat, setShowMoreCat] = useState(false)
-  const [categories, setCategories] = useState<FilterCategory[]>(fallbackCategories)
-
-  // As categorias vêm da mesma tabela que o admin edita; se falhar, fica a lista de gêneros padrão.
-  useEffect(() => {
-    supabase
-      .from('categories')
-      .select('slug, name')
-      .eq('active', true)
-      .order('name')
-      .then(({ data }) => {
-        if (data && data.length > 0) setCategories(data as FilterCategory[])
-      })
-  }, [])
+  const categories = mockCategories
 
   const update = (partial: Partial<FilterState>) => onChange({ ...filters, ...partial })
 

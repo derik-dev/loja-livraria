@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { supabaseAdmin as supabase, mapProduct } from '@/lib/supabase'
+import { mockProducts } from '@/lib/data/products'
 import { Product } from '@/lib/types'
 import { BRAND_NAME } from '@/lib/brand'
 import { BookImage } from '@/components/zine'
@@ -59,7 +59,7 @@ function ProductCard({ slug, products }: { slug: string; products: Product[] }) 
 
 function TypingIndicator() {
   return (
-    <div className="flex w-fit items-center gap-1 border-2 border-[var(--z-ink)] bg-[#fffdf6] px-3 py-2.5">
+    <div className="flex w-fit items-center gap-1 border-2 border-[var(--z-ink)] bg-card px-3 py-2.5">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
@@ -76,15 +76,9 @@ export default function ChatAssistant() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [products, setProducts] = useState<Product[]>([])
+  const products = mockProducts
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
-
-  useEffect(() => {
-    supabase.from('products').select('*').then(({ data }) => {
-      if (data) setProducts(data.map(mapProduct))
-    })
-  }, [])
 
   useEffect(() => {
     if (open) {
@@ -146,7 +140,7 @@ export default function ChatAssistant() {
               <p className="z-display text-lg leading-tight">Vera</p>
               <p className="text-[10px] font-bold text-[var(--z-ink)]/70">Assistente da {BRAND_NAME}</p>
             </div>
-            <button onClick={() => setOpen(false)} className="flex h-8 w-8 items-center justify-center border-2 border-[var(--z-ink)] bg-[#fffdf6] hover:bg-[var(--z-pink)]">
+            <button onClick={() => setOpen(false)} className="flex h-8 w-8 items-center justify-center border-2 border-[var(--z-ink)] bg-card hover:bg-[var(--z-pink)]">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -164,7 +158,7 @@ export default function ChatAssistant() {
                     <div className={`px-3 py-2 text-sm leading-relaxed ${
                       isUser
                         ? 'border-2 border-[var(--z-ink)] bg-[var(--z-ink)] font-medium text-[var(--z-paper)]'
-                        : 'border-2 border-[var(--z-ink)] bg-[#fffdf6] font-medium'
+                        : 'border-2 border-[var(--z-ink)] bg-card font-medium'
                     }`}>
                       {parts.map((part, j) =>
                         part.type === 'text'

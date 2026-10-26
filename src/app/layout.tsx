@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { DM_Sans, Playfair_Display } from 'next/font/google'
+import { DM_Sans, Poppins } from 'next/font/google'
 import './globals.css'
 import ClientProviders from '@/components/ClientProviders'
 import { BRAND_NAME, BRAND_TAGLINE } from '@/lib/brand'
@@ -11,12 +11,12 @@ const dmSans = DM_Sans({
   variable: '--font-dm-sans',
 })
 
-// Playfair Display: títulos e logo.
-const playfair = Playfair_Display({
+// Poppins: títulos e logo.
+const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '600', '700', '800'],
   style: ['normal', 'italic'],
-  variable: '--font-playfair',
+  variable: '--font-poppins',
 })
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="pt-BR"
       data-theme="biblioteca"
-      className={`${dmSans.variable} ${playfair.variable}`}
+      className={`${dmSans.variable} ${poppins.variable}`}
     >
       <body className={dmSans.className}>
         <ClientProviders>{children}</ClientProviders>
