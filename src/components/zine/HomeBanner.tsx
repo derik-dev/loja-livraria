@@ -106,6 +106,9 @@ export default function HomeBanner({ products }: { products: Product[] }) {
         </div>
       </div>
 
+      {/* Degradê: o banner se dissolve no fundo da página, por baixo dos cartões de atalho */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[var(--bk-paper)]" aria-hidden="true" />
+
       {/* Setas */}
       <button
         onClick={() => setIndex((i) => (i - 1 + slides.length) % slides.length)}

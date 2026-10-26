@@ -17,36 +17,26 @@ export default function FaqSection() {
   const [open, setOpen] = useState<number | null>(0)
 
   return (
-    <section className="px-6 py-16 sm:px-10 sm:py-24 lg:px-16">
+    <section id="duvidas" className="scroll-mt-32 px-4 py-14 sm:px-6">
       <div className="mx-auto max-w-[900px]">
-        <div className="text-center">
-          <p className="bk-eyebrow">Atendimento</p>
-          <h2 className="bk-display mt-3 text-[clamp(2rem,4.4vw,3.4rem)]">Perguntas frequentes</h2>
-          <div className="bk-ornament mx-auto mt-6 max-w-xs" aria-hidden="true">✦</div>
-        </div>
+        <h2 className="z-plain mb-6 text-2xl font-semibold">Perguntas frequentes</h2>
 
-        <div className="mt-12 border-y border-[var(--bk-ink)]">
+        <div className="bk-card divide-y divide-[var(--bk-paper-2)] overflow-hidden">
           {faqs.map((faq, i) => {
             const isOpen = open === i
             return (
-              <div key={faq.q} className="border-b border-[var(--bk-line)] last:border-b-0">
+              <div key={faq.q}>
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                  className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left transition-colors hover:bg-[var(--bk-paper)]/60"
                 >
-                  <span className={`bk-display text-lg transition-colors sm:text-xl ${isOpen ? 'text-[var(--bk-burgundy)]' : ''}`} style={{ fontWeight: 600 }}>
-                    {faq.q}
-                  </span>
-                  <span
-                    className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border border-[var(--bk-ink)] text-lg leading-none transition-transform"
-                    style={{ transform: isOpen ? 'rotate(45deg)' : 'none' }}
-                    aria-hidden="true"
-                  >
-                    +
-                  </span>
+                  <span className={`text-base font-medium ${isOpen ? 'text-[var(--bk-navy-2)]' : ''}`}>{faq.q}</span>
+                  <svg className={`h-5 w-5 flex-shrink-0 text-[var(--bk-ink-soft)] transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
-                {isOpen && <p className="pb-6 pr-12 text-base leading-relaxed text-[var(--bk-ink-soft)]">{faq.a}</p>}
+                {isOpen && <p className="px-6 pb-6 pr-14 text-[15px] leading-relaxed text-[var(--bk-ink-soft)]">{faq.a}</p>}
               </div>
             )
           })}
