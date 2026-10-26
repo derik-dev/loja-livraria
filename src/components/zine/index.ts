@@ -1,0 +1,6 @@
+export { BookCover, BookImage } from './BookCover'
+export { default as PageHero } from './PageHero'
+export { default as HomeHero } from './HomeHero'
+export { default as GenreTiles } from './GenreTiles'
+export { default as Manifesto } from './Manifesto'
+export { default as TopFive } from './TopFive'
