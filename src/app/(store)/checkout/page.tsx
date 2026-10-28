@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/store/cartStore'
 import { formatCurrency } from '@/lib/utils'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
@@ -10,6 +11,8 @@ import { useAuth } from '@/context/AuthContext'
 import BrandLogo from '@/components/ui/BrandLogo'
 import { BookImage } from '@/components/zine'
 import { BRAND_NAME } from '@/lib/brand'
+import { MethodPicker, type PayMethod } from '@/components/checkout/PaymentSimulator'
+import { GIFT_BAG_PRICE, GIFT_WRAP_PRICE, PIX_DISCOUNT_RATE, saveDraft } from '@/lib/checkoutDraft'
 
 type Step = 'informacoes' | 'frete' | 'pagamento'
 
@@ -68,9 +71,9 @@ function FloatingSelect({
   className?: string
 }) {
   return (
-    <div className={`relative border border-border-strong bg-card px-3 pt-2 pb-1.5 focus-within:border-accent transition-colors ${className}`}>
+    <div className={`relative rounded-lg border border-border-strong bg-card px-3 pt-2 pb-1.5 focus-within:border-accent transition-colors ${className}`}>
       <span className="block text-[10px] text-muted leading-none mb-0.5">{label}</span>
-      <select className="w-full text-sm text-ink bg-transparent focus:outline-none appearance-none pr-6">
+      <select className="w-full appearance-none pr-6 text-sm text-ink focus:outline-none !rounded-none !border-0 !bg-transparent !shadow-none">
         {children}
       </select>
       <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
@@ -132,7 +135,6 @@ function GiftCard({
 export default function CheckoutPage() {
   const items = useCartStore((s) => s.items)
   const total = useCartStore((s) => s.total())
-  const clearCart = useCartStore((s) => s.clearCart)
   const { user } = useAuth()
 
   const [mounted, setMounted] = useState(false)
@@ -140,7 +142,6 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState<Step>('informacoes')
   const [selectedShipping, setSelectedShipping] = useState<{ id: string; label: string; price: number } | null>(null)
-  const [cpf, setCpf] = useState('')
   const [useSameAddress, setUseSameAddress] = useState(true)
   const [coupon, setCoupon] = useState('')
   const [couponLoading, setCouponLoading] = useState(false)
@@ -156,8 +157,6 @@ export default function CheckoutPage() {
   /* embrulho de presente */
   const [giftBag, setGiftBag] = useState(false)
   const [giftWrap, setGiftWrap] = useState(false)
-  const GIFT_BAG_PRICE = 9
-  const GIFT_WRAP_PRICE = 13.9
   const giftTotal = (giftBag ? GIFT_BAG_PRICE : 0) + (giftWrap ? GIFT_WRAP_PRICE : 0)
 
   /* endereço */
@@ -178,6 +177,7 @@ export default function CheckoutPage() {
   /* validação */
   const [emailError, setEmailError] = useState('')
   const emailRef = useRef<HTMLInputElement>(null)
+  const formRef = useRef<HTMLFormElement>(null)
 
   // Pré-preenche com dados do usuário logado
   useEffect(() => {
@@ -197,7 +197,7 @@ export default function CheckoutPage() {
         .eq('user_id', user!.id)
         .order('is_default', { ascending: false })
         .limit(1)
-        .single()
+        .maybeSingle()
       if (error) { console.error('[Checkout] address:', error); return }
       if (!data) return
       setCep(data.zip ?? '')
@@ -237,11 +237,15 @@ export default function CheckoutPage() {
     }
   }
 
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  // A forma de pagamento é escolhida aqui; o pagamento (simulado) acontece na página do Pix ou do cartão.
+  const [payMethod, setPayMethod] = useState<PayMethod>('pix')
 
   const shipping = selectedShipping !== null ? selectedShipping.price : null
-  const finalTotal = Math.max(0, total - discount) + (shipping ?? 0) + giftTotal
+  const baseTotal = Math.max(0, total - discount) + (shipping ?? 0) + giftTotal
+  // 2% de desconto no Pix, só quando a pessoa chega ao pagamento e escolhe Pix.
+  const pixDiscount = step === 'pagamento' && payMethod === 'pix' ? Math.round(Math.max(0, total - discount) * PIX_DISCOUNT_RATE * 100) / 100 : 0
+  const finalTotal = baseTotal - pixDiscount
 
   const handleApplyCoupon = async () => {
     if (!coupon.trim()) return
@@ -299,54 +303,18 @@ export default function CheckoutPage() {
       return
     }
 
-    setLoading(true)
-
-    const firstName = items[0]?.product.name ?? 'Produto'
-    const productLabel = items.length > 1
-      ? `${firstName} + ${items.length - 1} outro${items.length > 2 ? 's' : ''}`
-      : firstName
-    const totalItems = items.reduce((s, i) => s + i.quantity, 0)
-    const orderId = `#${Math.floor(10000 + Math.random() * 90000)}`
-
-    const { error } = await supabase.from('orders').insert({
-      id: orderId,
-      user_id: user?.id ?? null,
-      customer_name: user?.user_metadata?.name ?? user?.email?.split('@')[0] ?? 'Cliente',
-      customer_email: user?.email ?? emailRef.current?.value ?? '',
-      product_name: productLabel,
-      items: totalItems,
-      total: finalTotal,
-      status: 'Novo',
-      carrier: selectedShipping?.id === 'sedex' ? 'SEDEX — Correios' : selectedShipping?.id === 'pac' ? 'PAC — Correios' : selectedShipping?.id === 'gratis' ? 'Correios' : null,
+    // Última etapa: guarda os dados e segue para a página do Pix ou do cartão.
+    saveDraft({
+      email,
+      nome,
+      sobrenome,
+      address: [rua, numero, bairro, cep, cidade, estado, 'Brasil'].filter(Boolean).join(', '),
+      shipping: selectedShipping,
+      discount,
+      giftBag,
+      giftWrap,
     })
-
-    if (error) {
-      console.error('[Checkout] erro ao salvar pedido:', error)
-    }
-
-    clearCart()
-    setSubmitted(true)
-    setLoading(false)
-  }
-
-  if (submitted) {
-    return (
-      <div data-tone="light" className="min-h-screen bg-bg flex items-center justify-center">
-        <div className="surface p-12 text-center max-w-md w-full mx-4">
-          <div className="w-12 h-12 border border-accent flex items-center justify-center mx-auto mb-6">
-            <svg className="h-6 w-6 text-ink" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-          </div>
-          <h1 className="text-lg font-semibold text-ink mb-3">Pedido Confirmado!</h1>
-          <p className="text-sm text-muted mb-1">Seu pedido foi recebido com sucesso.</p>
-          <p className="text-xs text-muted mb-8">Você receberá um e-mail com os detalhes e o código de rastreio em breve.</p>
-          <Link href="/" className="inline-block bg-accent text-on-accent text-xs font-bold tracking-[0.15em] uppercase px-8 py-3.5 hover:opacity-90 transition-colors">
-            Voltar para a Loja
-          </Link>
-        </div>
-      </div>
-    )
+    router.push(payMethod === 'pix' ? '/checkout/pix' : '/checkout/cartao')
   }
 
   return (
@@ -367,7 +335,7 @@ export default function CheckoutPage() {
             <Link href="/carrinho" className="text-xs text-muted hover:text-ink transition-colors">Carrinho</Link>
             {STEPS.map((s, i) => (
               <span key={s} className="flex items-center gap-1.5">
-                <svg className="h-3 w-3 text-muted/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-3 w-3 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                 </svg>
                 <button
@@ -377,7 +345,7 @@ export default function CheckoutPage() {
                     'text-xs transition-colors',
                     i === currentStepIndex ? 'text-ink font-semibold' :
                     i < currentStepIndex ? 'text-muted hover:text-ink cursor-pointer' :
-                    'text-muted/60 cursor-default',
+                    'text-muted cursor-default',
                   ].join(' ')}
                 >
                   {STEP_LABELS[s]}
@@ -386,7 +354,7 @@ export default function CheckoutPage() {
             ))}
           </nav>
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-8">
+          <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-8">
 
             {/* ── STEP 1: Informações ── */}
             {step === 'informacoes' && (
@@ -410,11 +378,18 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="mt-4">
-                    <CheckboxField label="Esse pedido é um presente?" checked={isGift} onChange={() => setIsGift(!isGift)} />
+                    <CheckboxField label="Esse pedido é um presente?" checked={isGift} onChange={() => {
+                      // Ao desmarcar, as embalagens de presente saem do pedido (e do total).
+                      if (isGift) {
+                        setGiftBag(false)
+                        setGiftWrap(false)
+                      }
+                      setIsGift(!isGift)
+                    }} />
                   </div>
 
-                  {/* Gift upsell — sempre visível */}
-                  <div className="mt-4 space-y-3">
+                  {/* Embalagens de presente: só aparecem se o cliente marcar que o pedido é um presente */}
+                  {isGift && <div className="mt-4 space-y-3">
                     <GiftCard
                       title={`Vai presentear? Dê um upgrade com a ${BRAND_NAME} Gift Bag`}
                       subtitle="Aviso: A sacola é enviada à parte para você montar."
@@ -428,7 +403,7 @@ export default function CheckoutPage() {
                       imageSrc="/gift-wrap-silver.png" imageAlt="Embalagem de presente prateada"
                       added={giftWrap} onToggle={() => setGiftWrap(v => !v)}
                     />
-                  </div>
+                  </div>}
                 </section>
 
                 {/* Endereço */}
@@ -465,9 +440,9 @@ export default function CheckoutPage() {
                     </div>
                     <div className="grid grid-cols-2 gap-2.5">
                       <Field placeholder="Cidade" required value={cidade} onChange={(e) => setCidade(e.target.value)} />
-                      <div className="relative border border-border-strong bg-card focus-within:border-accent transition-colors">
+                      <div className="relative rounded-lg border border-border-strong bg-card transition-colors focus-within:border-accent">
                         <select
-                          className="w-full px-3 py-3.5 text-sm text-ink bg-transparent focus:outline-none appearance-none pr-8"
+                          className="w-full appearance-none px-3 py-3.5 pr-8 text-sm text-ink focus:outline-none !rounded-lg !border-0 !bg-transparent !shadow-none"
                           value={estado}
                           onChange={(e) => setEstado(e.target.value)}
                         >
@@ -585,40 +560,15 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* CPF/CNPJ */}
                 <div>
-                  <h2 className="text-base font-medium text-ink mb-1">CPF/CNPJ obrigatório para emitir nota fiscal</h2>
-                  <Field
-                    placeholder="CPF/CNPJ"
-                    value={cpf}
-                    onChange={(e) => setCpf(e.target.value)}
-                  />
-                </div>
-
-                {/* Pagamento */}
-                <div>
-                  <h2 className="text-base font-medium text-ink">Pagamento</h2>
-                  <p className="text-xs text-muted mt-0.5 mb-4">Todas as transações são seguras e criptografadas.</p>
-
-                  {/* Banner PIX */}
-                  <div className="flex items-start gap-2.5 border border-border rounded-lg px-4 py-3 mb-3 bg-bg-alt">
-                    <svg className="h-4 w-4 flex-shrink-0 text-muted mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-                    </svg>
-                    <div>
-                      <p className="text-sm font-medium text-ink">2% OFF no Pix</p>
-                      <p className="text-xs text-muted mt-0.5">Desbloqueie 2% OFF a mais em pagamento via PIX</p>
-                    </div>
-                  </div>
-
-                  {/* PIX único selecionado */}
-                  <div className="border-2 border-accent rounded-lg px-4 py-3.5 flex items-center gap-3 bg-card">
-                    <div className="w-4 h-4 rounded-full border-2 border-accent flex items-center justify-center flex-shrink-0">
-                      <div className="w-2 h-2 rounded-full bg-accent" />
-                    </div>
-                    <span className="text-sm font-medium text-ink">Pix</span>
-                  </div>
-                  <p className="text-xs text-muted mt-2">O QR Code será exibido após confirmar o pedido.</p>
+                  <h2 className="text-base font-medium text-ink">Forma de pagamento</h2>
+                  <p className="mb-4 mt-0.5 text-xs text-muted">Escolha como quer pagar. O pagamento é feito na próxima página.</p>
+                  <MethodPicker method={payMethod} onSelect={setPayMethod} />
+                  <p className="mt-3 text-xs text-muted">
+                    {payMethod === 'pix'
+                      ? 'No Pix você ganha 2% de desconto e o QR Code aparece na próxima página.'
+                      : 'No cartão você pode parcelar em até 6x sem juros.'}
+                  </p>
                 </div>
 
                 {/* Endereço de faturamento */}
@@ -659,13 +609,12 @@ export default function CheckoutPage() {
 
               <button
                 type="submit"
-                disabled={loading || items.length === 0}
+                disabled={items.length === 0}
                 className="bg-accent text-on-accent text-sm font-medium px-8 py-3.5 hover:opacity-90 transition-colors disabled:opacity-50 rounded"
               >
-                {loading ? 'Processando...' :
-                  step === 'informacoes' ? 'Continuar para frete' :
+                {step === 'informacoes' ? 'Continuar para frete' :
                   step === 'frete' ? 'Continuar com o pagamento' :
-                  'Finalizar a compra'}
+                  payMethod === 'pix' ? 'Continuar para o pagamento com Pix' : 'Continuar para o pagamento com cartão'}
               </button>
             </div>
 
@@ -755,6 +704,12 @@ export default function CheckoutPage() {
               <div className="flex justify-between text-green-600">
                 <span>Desconto</span>
                 <span>- {formatCurrency(discount)}</span>
+              </div>
+            )}
+            {pixDiscount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Desconto Pix (2%)</span>
+                <span>- {formatCurrency(pixDiscount)}</span>
               </div>
             )}
             {giftBag && (

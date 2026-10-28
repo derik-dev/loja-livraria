@@ -14,7 +14,7 @@ const BLEED = 'calc(50vw - 50%)'
  * Carrossel horizontal de livros: scroll-snap no toque, setas no desktop.
  * `spread`: as capas começam empilhadas e se espalham quando o carrossel entra na tela.
  */
-export default function BookCarousel({ books, label, spread = false, lead }: { books: Product[]; label: string; spread?: boolean; lead?: ReactNode }) {
+export default function BookCarousel({ books, label, spread = false, lead, bleed = true }: { books: Product[]; label: string; spread?: boolean; lead?: ReactNode; bleed?: boolean }) {
   const ref = useRef<HTMLUListElement>(null)
   const wrap = useRef<HTMLDivElement>(null)
   const [canLeft, setCanLeft] = useState(false)
@@ -91,14 +91,16 @@ export default function BookCarousel({ books, label, spread = false, lead }: { b
         </button>
       )}
       {canRight && (
-        <button type="button" onClick={() => scroll(1)} aria-label="Ver próximos" className={`${arrow}`} style={{ right: `calc(1rem - ${BLEED})` }}>
+        <button type="button" onClick={() => scroll(1)} aria-label="Ver próximos" className={`${arrow}`} style={{ right: bleed ? `calc(1rem - ${BLEED})` : '0.75rem' }}>
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
         </button>
       )}
 
       <ul
         ref={ref}
-        className="no-scrollbar -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-5 pb-2 md:mx-0 md:-mr-[calc(50vw-50%)] md:px-0 md:pr-[calc(50vw-50%)]"
+        className={bleed
+          ? 'no-scrollbar -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-5 pb-2 md:mx-0 md:-mr-[calc(50vw-50%)] md:px-0 md:pr-[calc(50vw-50%)]'
+          : 'no-scrollbar flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-0 pb-2'}
       >
         {lead && <li className="w-[86vw] shrink-0 snap-start sm:w-[340px]">{lead}</li>}
         {books.map((book) => (

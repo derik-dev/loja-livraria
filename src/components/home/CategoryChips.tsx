@@ -33,9 +33,9 @@ export default function CategoryChips() {
               <span className="text-[#ffbd59] transition-transform group-hover:scale-105"><CategoryIcon name={category.icon} /></span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium md:text-[15px]">{category.label}</span>
-                <span className="mt-0.5 block truncate text-xs text-[#fff]/65">{category.note}</span>
+                <span className="mt-0.5 block truncate text-xs text-[#fff]">{category.note}</span>
               </span>
-              <span className="text-lg leading-none text-[#fff]/80" aria-hidden="true">›</span>
+              <span className="text-lg leading-none text-[#fff]" aria-hidden="true">›</span>
             </Link>
           </li>
         ))}

@@ -10,7 +10,6 @@ interface AuthContextType {
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (email: string, password: string, name: string) => Promise<{ error: string | null }>
-  signInWithGoogle: (returnTo?: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -50,15 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null }
   }
 
-  async function signInWithGoogle(returnTo = '/conta') {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnTo)}`,
-      },
-    })
-  }
-
   async function signOut() {
     await supabase.auth.signOut()
   }
@@ -70,7 +60,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       signIn,
       signUp,
-      signInWithGoogle,
       signOut,
     }}>
       {children}

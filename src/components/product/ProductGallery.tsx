@@ -73,7 +73,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
           {/* Fechar */}
           <button
             onClick={() => setLightbox(null)}
-            className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center text-ink/60 hover:text-ink transition-colors"
+            className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center text-ink hover:text-ink transition-colors"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -81,7 +81,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
           </button>
 
           {/* Contador */}
-          <div className="absolute top-5 left-1/2 -translate-x-1/2 text-ink/50 text-sm font-medium tracking-widest">
+          <div className="absolute top-5 left-1/2 -translate-x-1/2 text-ink text-sm font-medium tracking-widest">
             {lightbox + 1} / {images.length}
           </div>
 
@@ -89,7 +89,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
           {images.length > 1 && (
             <button
               onClick={e => { e.stopPropagation(); prev() }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-ink/60 hover:text-ink transition-colors"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-ink hover:text-ink transition-colors"
             >
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -115,7 +115,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
           {images.length > 1 && (
             <button
               onClick={e => { e.stopPropagation(); next() }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-ink/60 hover:text-ink transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-ink hover:text-ink transition-colors"
             >
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

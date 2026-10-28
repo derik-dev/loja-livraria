@@ -66,7 +66,7 @@ export default function VideoSection() {
                   allowFullScreen
                 />
               ) : (
-                <p className="flex h-full items-center justify-center px-6 text-center text-creme/80">Adicione o código do vídeo do YouTube em site.config.ts (video.youtubeId).</p>
+                <p className="flex h-full items-center justify-center px-6 text-center text-creme">Adicione o código do vídeo do YouTube em site.config.ts (video.youtubeId).</p>
               )}
             </div>
           </div>

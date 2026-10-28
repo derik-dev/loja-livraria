@@ -32,6 +32,10 @@ export const useCartStore = create<CartStore>()(
           }
           return { items: [...state.items, { product, quantity, selectedColor, selectedSize }] }
         })
+        // Avisa a sacola lateral (CartDrawer), que abre sozinha mostrando o que foi adicionado.
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('cart-added', { detail: { product, quantity } }))
+        }
       },
 
       removeItem: (productId: string) => {

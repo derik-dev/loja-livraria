@@ -33,21 +33,36 @@ function Box({ checked }: { checked: boolean }) {
 export default function ProductFilters({ filters, onChange }: ProductFiltersProps) {
   const [localMin, setLocalMin] = useState(filters.minPrice?.toString() ?? '')
   const [localMax, setLocalMax] = useState(filters.maxPrice?.toString() ?? '')
+  const [priceError, setPriceError] = useState<string | null>(null)
   const [showMoreCat, setShowMoreCat] = useState(false)
   const categories = mockCategories
 
   const update = (partial: Partial<FilterState>) => onChange({ ...filters, ...partial })
 
   const applyPrice = () => {
+    const minPrice = localMin.trim() ? Number(localMin) : null
+    const maxPrice = localMax.trim() ? Number(localMax) : null
+
+    if ((minPrice !== null && (!Number.isFinite(minPrice) || minPrice < 0)) || (maxPrice !== null && (!Number.isFinite(maxPrice) || maxPrice < 0))) {
+      setPriceError('Informe valores de preço válidos.')
+      return
+    }
+    if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
+      setPriceError('O preço mínimo deve ser menor que o máximo.')
+      return
+    }
+
+    setPriceError(null)
     update({
-      minPrice: localMin ? Number(localMin) : null,
-      maxPrice: localMax ? Number(localMax) : null,
+      minPrice,
+      maxPrice,
     })
   }
 
   const reset = () => {
     setLocalMin('')
     setLocalMax('')
+    setPriceError(null)
     onChange({ category: null, minPrice: null, maxPrice: null, sortBy: 'newest' })
   }
 
@@ -94,6 +109,7 @@ export default function ProductFilters({ filters, onChange }: ProductFiltersProp
           <span className="flex-shrink-0 text-muted">–</span>
           <input type="number" placeholder="Máx" value={localMax} onChange={(e) => setLocalMax(e.target.value)} className={priceInput} />
         </div>
+        {priceError && <p role="alert" className="mb-2 text-xs text-red-600">{priceError}</p>}
         <button onClick={applyPrice} className="btn-primary mt-4 w-full !min-h-[40px] !py-2 !text-sm">
           Aplicar
         </button>

@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import BrandLogo from '@/components/ui/BrandLogo'
+import { mockProducts } from '@/lib/data/products'
+import { BookImage } from '@/components/zine'
 
 type Tab = 'pedidos' | 'favoritos' | 'trocas' | 'suporte' | 'perfil'
 
@@ -40,7 +42,7 @@ const NAV_TABS: { key: Tab; label: string }[] = [
 export default function ContaPage() {
   const { user, signOut } = useAuth()
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<Tab>('perfil')
+  const [activeTab, setActiveTab] = useState<Tab>('pedidos')
   const [editingName, setEditingName] = useState(false)
   const [nameValue, setNameValue] = useState(
     user?.user_metadata?.name ?? user?.email?.split('@')[0] ?? ''
@@ -50,15 +52,38 @@ export default function ContaPage() {
   type Order = { id: string; product_name: string; items: number; total: number; status: string; created_at: string }
   const [orders, setOrders] = useState<Order[]>([])
   const [loadingOrders, setLoadingOrders] = useState(true)
+  const [ordersError, setOrdersError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user) return
-    supabase
-      .from('orders')
-      .select('id, product_name, items, total, status, created_at')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .then(({ data }) => { setOrders((data ?? []).map(o => ({ ...o, total: Number(o.total) }))); setLoadingOrders(false) })
+    const userId = user.id
+    let active = true
+
+    async function loadOrders() {
+      setLoadingOrders(true)
+      setOrdersError(null)
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('id, product_name, items, total, status, created_at')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+
+        if (!active) return
+        if (error) {
+          setOrdersError('Não foi possível carregar seus pedidos agora.')
+        } else {
+          setOrders((data ?? []).map(o => ({ ...o, total: Number(o.total) })))
+        }
+      } catch {
+        if (active) setOrdersError('Não foi possível carregar seus pedidos agora.')
+      } finally {
+        if (active) setLoadingOrders(false)
+      }
+    }
+
+    void loadOrders()
+    return () => { active = false }
   }, [user])
 
   // Endereços
@@ -96,6 +121,10 @@ export default function ContaPage() {
   const displayName = nameValue || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Usuário'
   const email = user?.email ?? ''
   const initial = displayName[0]?.toUpperCase() ?? '?'
+  const completedOrders = orders.filter((order) => order.status !== 'Cancelado')
+  const purchasedItemCount = completedOrders.reduce((total, order) => total + Number(order.items || 0), 0)
+  const totalSpent = completedOrders.reduce((total, order) => total + order.total, 0)
+  const activeOrderCount = completedOrders.filter((order) => !['Entregue', 'Concluído'].includes(order.status)).length
 
   useEffect(() => {
     if (!user) return
@@ -396,53 +425,121 @@ export default function ContaPage() {
 
         {/* ── PEDIDOS ── */}
         {activeTab === 'pedidos' && (
-          <div>
-            <h1 className="text-xl font-semibold text-ink mb-6">Pedidos</h1>
+          <div className="space-y-8">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Sua estante</p>
+                <h1 className="mt-2 font-display text-3xl text-ink sm:text-4xl">Olá, {displayName}</h1>
+                <p className="mt-2 text-sm text-muted">Acompanhe seus pedidos e relembre suas leituras.</p>
+              </div>
+              <Link href="/produtos" className="btn-primary !min-h-[42px] !px-5 !py-2 !text-sm">Explorar livros</Link>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-border bg-card p-5">
+                <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted">Pedidos</p>
+                <p className="mt-2 text-2xl font-semibold text-ink">{loadingOrders ? '—' : orders.length}</p>
+                <p className="mt-1 text-xs text-muted">compras registradas</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted">Livros comprados</p>
+                <p className="mt-2 text-2xl font-semibold text-ink">{loadingOrders ? '—' : purchasedItemCount}</p>
+                <p className="mt-1 text-xs text-muted">unidades em pedidos não cancelados</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted">Total investido</p>
+                <p className="mt-2 text-2xl font-semibold text-ink">{loadingOrders ? '—' : formatCurrency(totalSpent)}</p>
+                <p className="mt-1 text-xs text-muted">{activeOrderCount} pedido{activeOrderCount === 1 ? '' : 's'} em andamento</p>
+              </div>
+            </div>
+
+            <div>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-ink">Seus pedidos</h2>
+                  <p className="mt-1 text-sm text-muted">Compras recentes e atualizações de entrega.</p>
+                </div>
+                {!loadingOrders && orders.length > 0 && <span className="text-xs text-muted">{orders.length} no total</span>}
+              </div>
             {loadingOrders ? (
-              <p className="text-sm text-muted">Carregando...</p>
+              <div className="rounded-xl border border-border p-8 text-center text-sm text-muted">Carregando seus pedidos...</div>
+            ) : ordersError ? (
+              <div role="alert" className="rounded-xl border border-border p-8 text-center">
+                <p className="text-sm text-muted">{ordersError}</p>
+                <button onClick={() => window.location.reload()} className="mt-4 text-sm font-semibold text-accent underline underline-offset-4">Tentar novamente</button>
+              </div>
             ) : orders.length === 0 ? (
-              <div className="border border-border rounded-xl p-8 text-center">
-                <p className="text-sm text-muted">Você ainda não fez nenhum pedido.</p>
-                <Link href="/produtos" className="inline-block mt-4 text-xs font-bold uppercase tracking-[0.16em] underline underline-offset-4 text-muted hover:text-accent transition-colors">
-                  Ver produtos
+              <div className="rounded-xl border border-border bg-card p-8 text-center sm:p-12">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-card-hover text-accent" aria-hidden="true">
+                  <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M5 8.5h14l1 12H4l1-12Zm3.5 0V6a3.5 3.5 0 0 1 7 0v2.5" /></svg>
+                </div>
+                <h3 className="mt-4 text-base font-semibold text-ink">Sua próxima leitura começa aqui</h3>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted">Quando você fizer uma compra, os livros, valores e atualizações de entrega vão aparecer nesta área.</p>
+                <Link href="/produtos" className="btn-primary mt-6 inline-flex !min-h-[44px] !px-6 !py-2.5 !text-sm">
+                  Ver catálogo
                 </Link>
               </div>
             ) : (
-              <div className="space-y-3">
-                {orders.map((order) => (
-                  <div key={order.id} className="border border-border rounded-xl p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-semibold text-ink">{order.id}</p>
-                        <p className="text-sm text-muted mt-0.5">{order.product_name}</p>
-                        <p className="text-xs text-muted mt-1">
-                          {order.items} {order.items === 1 ? 'item' : 'itens'} · {new Date(order.created_at).toLocaleDateString('pt-BR')}
-                        </p>
+              <div className="space-y-4">
+                {orders.map((order) => {
+                  const lineItems = order.product_name.split(' • ').map((label) => {
+                    const quantityMatch = label.match(/\s+\((\d+)x\)$/)
+                    const name = quantityMatch ? label.slice(0, quantityMatch.index) : label
+                    return {
+                      name,
+                      quantity: Number(quantityMatch?.[1] ?? order.items),
+                      product: mockProducts.find((item) => item.name === name) ?? mockProducts.find((item) => name.startsWith(item.name)),
+                    }
+                  })
+                  const statusClass = order.status === 'Enviado' || order.status === 'Entregue'
+                    ? 'bg-blue-100 text-blue-800'
+                    : order.status === 'Cancelado'
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-accent/15 text-espresso'
+
+                  return (
+                    <article key={order.id} className="overflow-hidden rounded-xl border border-border bg-card">
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card-hover/50 px-5 py-3">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted">
+                          <span className="font-semibold text-ink">Pedido {order.id}</span>
+                          <span>{new Date(order.created_at).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}>{order.status}</span>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-bold text-ink">{formatCurrency(order.total)}</p>
-                        <span className={`inline-block mt-1 text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                          order.status === 'Enviado' ? 'bg-blue-100 text-accent' :
-                          order.status === 'Cancelado' ? 'bg-red-100 text-red-700' :
-                          order.status === 'Novo' ? 'bg-violet-100 text-violet-700' :
-                          'bg-card-hover text-muted'
-                        }`}>
-                          {order.status}
-                        </span>
+                      <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
+                        <div className="min-w-0 flex-1 space-y-3">
+                          {lineItems.map((lineItem, index) => (
+                            <div key={`${lineItem.name}-${index}`} className="flex items-center gap-3">
+                              <div className="h-20 w-14 flex-shrink-0 overflow-hidden rounded-md bg-card-hover ring-1 ring-border">
+                                <BookImage src={lineItem.product?.images[0]} title={lineItem.name} sizes="56px" />
+                              </div>
+                              <div className="min-w-0">
+                                {lineItem.product ? (
+                                  <Link href={`/produto/${lineItem.product.slug}`} className="line-clamp-2 font-semibold text-ink hover:text-accent">{lineItem.name}</Link>
+                                ) : (
+                                  <h3 className="line-clamp-2 font-semibold text-ink">{lineItem.name}</h3>
+                                )}
+                                <p className="mt-1 text-sm text-muted">Quantidade: {lineItem.quantity}</p>
+                              </div>
+                            </div>
+                          ))}
+                          <p className="mt-3 text-xs font-medium uppercase tracking-[0.12em] text-muted">Total do pedido</p>
+                          <p className="mt-0.5 text-lg font-semibold text-ink">{formatCurrency(order.total)}</p>
+                        </div>
+                        <Link
+                          href={`/rastreio/${encodeURIComponent(order.id)}`}
+                          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border-strong px-4 text-sm font-semibold text-ink transition-colors hover:border-accent hover:text-accent"
+                        >
+                          Acompanhar pedido
+                          <span aria-hidden="true">→</span>
+                        </Link>
                       </div>
-                    </div>
-                    <div className="mt-3 pt-3 border-t border-border">
-                      <Link
-                        href={`/rastreio/${encodeURIComponent(order.id)}`}
-                        className="text-xs font-bold uppercase tracking-[0.12em] text-muted hover:text-accent underline underline-offset-2 transition-colors"
-                      >
-                        Rastrear pedido →
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+                    </article>
+                  )
+                })}
               </div>
             )}
+            </div>
           </div>
         )}
 

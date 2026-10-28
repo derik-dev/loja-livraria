@@ -8,7 +8,7 @@ import ChatAssistant from '@/components/ui/ChatAssistant'
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isAccountPage = pathname === '/conta'
-  const isCheckoutPage = pathname === '/checkout'
+  const isCheckoutPage = pathname.startsWith('/checkout')
   const hideChrome = isAccountPage || isCheckoutPage
 
   return (

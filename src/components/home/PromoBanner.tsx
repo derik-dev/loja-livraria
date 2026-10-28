@@ -79,7 +79,7 @@ export default function PromoBanner() {
         <div className="text-center md:text-left">
           <p data-bit className="text-xs font-semibold uppercase tracking-[0.3em] text-tan">{eyebrow}</p>
           <h2 data-title className="mt-3 text-[clamp(2rem,4.6vw,3.6rem)] leading-[1.08] text-creme">{title}</h2>
-          <p data-bit className="mx-auto mt-4 max-w-[520px] text-base text-creme/85 md:mx-0 md:text-lg">
+          <p data-bit className="mx-auto mt-4 max-w-[520px] text-base text-creme md:mx-0 md:text-lg">
             {text}
           </p>
           <div data-bit className="mt-7 flex flex-wrap justify-center gap-3 md:justify-start">

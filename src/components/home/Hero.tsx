@@ -93,7 +93,7 @@ export default function Hero() {
 
   return (
     <section ref={root} className="relative isolate overflow-hidden" aria-labelledby="home-title" data-hero>
-      {/* Camada 1: fundo (foto antiga da livraria) */}
+      {/* Camada 1: fundo (foto da livraria, no tamanho original: a foto é escura no lado esquerdo, onde fica o texto) */}
       <Image
         src="/hero-bg-bookstore.png"
         alt=""
@@ -102,7 +102,8 @@ export default function Hero() {
         sizes="100vw"
         className="-z-30 object-cover object-center"
       />
-      <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgb(30_18_13/0.94)_0%,rgb(30_18_13/0.78)_38%,rgb(30_18_13/0.25)_72%,transparent_100%),linear-gradient(0deg,rgb(30_18_13/0.6),transparent_45%)]" aria-hidden="true" />
+      {/* Gradiente na esquerda: marrom-espresso que se dissolve para a direita, para o texto ler bem sobre a foto */}
+      <div className="absolute inset-0 -z-20 bg-[linear-gradient(90deg,rgb(30_18_13/0.88)_0%,rgb(30_18_13/0.6)_30%,rgb(30_18_13/0.2)_55%,transparent_75%)]" aria-hidden="true" />
 
       <div className="relative mx-auto flex w-full max-w-[1280px] flex-col px-5 pb-[calc(8rem+100px)] pt-[13.5rem] md:px-10 md:min-h-[min(calc(78vh+100px),790px)] md:flex-row md:items-center md:gap-2 md:pb-24 md:pt-32">
         {/* Texto */}
@@ -118,7 +119,7 @@ export default function Hero() {
             </span>
             {after && <>{' '}<span data-split>{after}</span></>}
           </h1>
-          <p data-rise className="mt-6 max-w-[540px] text-base leading-relaxed text-creme/90 md:text-xl">{subtitle}</p>
+          <p data-rise className="mt-6 max-w-[540px] text-base leading-relaxed text-creme md:text-xl">{subtitle}</p>
           <div data-rise className="mt-8 flex flex-wrap gap-3">
             <Link href={primaryCta.href} className="btn-primary !min-h-[54px] !rounded-full !px-8 !text-[15px]">
               {primaryCta.label} <ArrowIcon />

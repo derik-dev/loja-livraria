@@ -15,10 +15,10 @@
    daquela seção. Fora disso vale o escuro. Componentes só leem as variáveis (sem hex solto). */
 /* Paleta da marca (fixa). Os valores podem ser trocados em src/site.config.ts (aplicados no <html>). */
 @theme static {
-  --color-espresso: #2B1B14;
-  --color-espresso-deep: #1E120D;
-  --color-creme: #F6EFE3;
-  --color-creme-card: #FBF6EC;
+  --color-espresso: #2B1B14;       /* marrom-espresso */
+  --color-espresso-deep: #1E120D;  /* espresso mais fundo, para camadas */
+  --color-creme: #FFFFFF;          /* branco */
+  --color-creme-card: #F6F6F6;     /* branco levemente cinza: seções alternadas e cartões */
   --color-tan: #D9A66B;        /* dourado: só em botões, preços e destaques */
   --color-marrom-medio: #8A5A3B;
   --color-vinho: #4A1F2A;     /* vinho escuro: capas geradas */
@@ -33,7 +33,7 @@
   --card-hover: color-mix(in srgb, var(--color-marrom-medio) 32%, var(--color-espresso));
   --footer: var(--color-espresso-deep);
   --ink: var(--color-creme);
-  --muted: color-mix(in srgb, var(--color-creme) 72%, var(--color-espresso));  /* nunca abaixo disto (contraste AA) */
+  --muted: var(--ink);   /* sem cinza: texto secundário usa a mesma cor do texto principal (branco no escuro, preto no claro) */
   --accent: var(--color-tan);
   --on-accent: var(--color-espresso-deep);   /* texto sobre fundo accent */
   --cta: var(--color-tan);                   /* botão principal: tan nos dois tons */
@@ -71,7 +71,7 @@
   --card-2: var(--color-creme-card);
   --card-hover: color-mix(in srgb, var(--color-marrom-medio) 9%, var(--color-creme));
   --ink: var(--color-espresso);
-  --muted: color-mix(in srgb, var(--color-espresso) 74%, var(--color-creme));
+  --muted: var(--ink);
   --accent: var(--color-marrom-medio);       /* texto e selos sobre creme (contraste AA); o tan fica nos botões */
   --on-accent: var(--color-creme-card);
   --cta: var(--color-tan);
@@ -322,7 +322,7 @@
 }
 :root[data-theme="biblioteca"] input::placeholder,
 :root[data-theme="biblioteca"] textarea::placeholder {
-  color: var(--muted);
+  color: color-mix(in srgb, var(--ink) 55%, transparent);   /* só o texto de exemplo dos campos fica mais suave */
 }
 :root[data-theme="biblioteca"] input[type="checkbox"],
 :root[data-theme="biblioteca"] input[type="radio"] {
@@ -544,3 +544,14 @@ html.lenis, html.lenis body { height: auto; }
 @keyframes map-pulse { 0% { transform: scale(0.6); opacity: 0.6; } 100% { transform: scale(2.2); opacity: 0; } }
 .map-pulse { transform-box: fill-box; transform-origin: center; animation: map-pulse 2.4s ease-out infinite; }
 @media (prefers-reduced-motion: reduce) { .map-pulse { animation: none; } }
+
+/* Preenchimento automático do navegador: sem o fundo azul/amarelo, os campos mantêm as cores da loja */
+:root[data-theme="biblioteca"]:not(:has([data-admin])) :is(input, select, textarea):-webkit-autofill,
+:root[data-theme="biblioteca"]:not(:has([data-admin])) :is(input, select, textarea):-webkit-autofill:hover,
+:root[data-theme="biblioteca"]:not(:has([data-admin])) :is(input, select, textarea):-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px var(--card) inset;
+  box-shadow: 0 0 0 1000px var(--card) inset;
+  transition: background-color 9999s ease-out 0s;
+}

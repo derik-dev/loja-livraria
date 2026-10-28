@@ -8,7 +8,7 @@ export default function AnnouncementBar() {
   const row = (hidden: boolean) => (
     <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
       {messages.map((message, i) => (
-        <li key={`${message}-${i}`} className="flex items-center whitespace-nowrap px-5 text-xs text-ink/90 sm:text-[13px]">
+        <li key={`${message}-${i}`} className="flex items-center whitespace-nowrap px-5 text-xs text-ink sm:text-[13px]">
           {message}
           <span className="ml-10 text-tan" aria-hidden="true">✦</span>
         </li>

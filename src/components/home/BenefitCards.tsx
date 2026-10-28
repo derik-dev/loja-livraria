@@ -84,7 +84,7 @@ export default function BenefitCards() {
                 <svg className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6} aria-hidden="true">{ICONS[i % ICONS.length]}</svg>
               </span>
               <h3 className="mt-3 text-[17px] font-semibold leading-snug text-creme md:mt-4 md:text-[22px]">{benefit.title}</h3>
-              <p className="mt-1.5 text-sm leading-snug text-creme/85 md:text-base">{benefit.text}</p>
+              <p className="mt-1.5 text-sm leading-snug text-creme md:text-base">{benefit.text}</p>
             </div>
           </li>
         ))}

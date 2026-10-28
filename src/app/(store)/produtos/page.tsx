@@ -14,7 +14,7 @@ const defaultFilters: FilterState = {
 }
 
 const SORT_OPTIONS = [
-  { value: 'newest', label: 'Mais recentes' },
+  { value: 'newest', label: 'Novidades primeiro' },
   { value: 'price-asc', label: 'Menor preço' },
   { value: 'price-desc', label: 'Maior preço' },
   { value: 'rating', label: 'Melhor avaliação' },
@@ -88,6 +88,7 @@ export default function ProdutosPage() {
     if (filters.maxPrice !== null) list = list.filter((p) => p.price <= filters.maxPrice!)
     if (!query.trim()) {
       switch (filters.sortBy) {
+        case 'newest': list.sort((a, b) => Number(b.section?.includes('novidades')) - Number(a.section?.includes('novidades'))); break
         case 'price-asc': list.sort((a, b) => a.price - b.price); break
         case 'price-desc': list.sort((a, b) => b.price - a.price); break
         case 'rating': list.sort((a, b) => b.rating - a.rating); break
@@ -201,7 +202,7 @@ export default function ProdutosPage() {
           {/* Desktop sidebar */}
           <aside className="hidden w-56 flex-shrink-0 lg:block">
             <div className="sticky top-6">
-            <ProductFilters filters={filters} onChange={setFilters} />
+            <ProductFilters key={`${filters.minPrice ?? ''}-${filters.maxPrice ?? ''}`} filters={filters} onChange={setFilters} />
             </div>
           </aside>
 
@@ -218,7 +219,7 @@ export default function ProdutosPage() {
                     </svg>
                   </button>
                 </div>
-                <ProductFilters filters={filters} onChange={(f) => { setFilters(f); setFiltersVisible(false) }} />
+                <ProductFilters key={`${filters.minPrice ?? ''}-${filters.maxPrice ?? ''}`} filters={filters} onChange={(f) => { setFilters(f); setFiltersVisible(false) }} />
               </div>
             </div>
           )}

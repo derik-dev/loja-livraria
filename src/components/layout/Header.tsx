@@ -12,7 +12,6 @@ import BrandLogo from '@/components/ui/BrandLogo'
 import { BookImage } from '@/components/zine'
 import MobileMenu from './MobileMenu'
 import AnnouncementBar from './AnnouncementBar'
-import { siteConfig } from '@/site.config'
 
 // `overlay` e `sticky` eram do cabeçalho transparente antigo; o atual é sempre sólido.
 interface HeaderProps {
@@ -21,13 +20,6 @@ interface HeaderProps {
   flow?: boolean
   sticky?: boolean
 }
-
-// Links úteis do header (destinos em src/site.config.ts).
-const UTILITY_LINKS = [
-  { label: 'Rastrear pedido', href: siteConfig.links.track },
-  { label: 'Ajuda', href: siteConfig.links.help },
-  { label: 'Loja física', href: siteConfig.links.store },
-]
 
 const textLink = 'whitespace-nowrap text-sm text-muted transition-colors hover:text-ink'
 
@@ -169,23 +161,17 @@ export default function Header({ overlay: overlayProp = false, flow = false }: H
 
         {/* desktop */}
         <div className="container-page hidden md:block">
-          {/* Links úteis: faixa fina acima do menu, alinhada à direita do container */}
-          <nav aria-label="Links úteis" className="flex justify-end gap-6 pt-2.5">
-            {UTILITY_LINKS.map((link) => (
-              <Link key={link.label} href={link.href} className="whitespace-nowrap text-sm font-medium text-[#fff8ef] transition-colors hover:text-tan">{link.label}</Link>
-            ))}
-          </nav>
-          <div className={`items-center pb-4 pt-1 ${overlay ? 'grid grid-cols-[auto_auto_minmax(220px,1fr)_auto] gap-5 xl:gap-7' : 'grid grid-cols-[auto_1fr_auto] gap-8'}`}>
+          <div className={`items-center pb-4 pt-1 ${overlay ? 'grid grid-cols-[auto_auto_minmax(160px,1fr)_auto] gap-4 xl:gap-5' : 'grid grid-cols-[auto_1fr_auto] gap-8'}`}>
             <Link href="/" aria-label="Papelada, página inicial">
               <BrandLogo variant={overlay ? 'light' : 'dark'} textClassName="text-[1.7rem]" />
             </Link>
             {overlay && (
-              <nav aria-label="Navegação principal" className="hidden items-center gap-5 xl:flex xl:gap-6">
-                <Link href="/produtos" className="text-sm text-[#fff8ef] transition-colors hover:text-accent">Livros⌄</Link>
-                <Link href="/produtos?autor=" className="text-sm text-[#fff8ef] transition-colors hover:text-accent">Autores</Link>
-                <Link href="/produtos?ordem=mais-vendidos" className="whitespace-nowrap text-sm text-[#fff8ef] transition-colors hover:text-accent">Mais vendidos</Link>
-                <Link href="/secao/novidades" className="text-sm text-[#fff8ef] transition-colors hover:text-accent">Lançamentos</Link>
-                <Link href="/produtos?oferta=true" className="text-sm text-[#fff8ef] transition-colors hover:text-accent">Ofertas</Link>
+              <nav aria-label="Navegação principal" className="hidden items-center gap-4 xl:flex xl:gap-5">
+                <Link href="/produtos" className="text-[19px] text-[#fff8ef] transition-colors hover:text-accent">Livros⌄</Link>
+                <Link href="/autores" className="text-[19px] text-[#fff8ef] transition-colors hover:text-accent">Autores</Link>
+                <Link href="/produtos?ordem=mais-vendidos" className="whitespace-nowrap text-[19px] text-[#fff8ef] transition-colors hover:text-accent">Mais vendidos</Link>
+                <Link href="/secao/novidades" className="text-[19px] text-[#fff8ef] transition-colors hover:text-accent">Lançamentos</Link>
+                <Link href="/produtos?oferta=true" className="text-[19px] text-[#fff8ef] transition-colors hover:text-accent">Ofertas</Link>
               </nav>
             )}
             {searchBox}

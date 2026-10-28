@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { collections, type CollectionTone } from '@/data/collections'
 import { gsap, ScrollTrigger, useGSAP, MEDIA } from '@/lib/gsap'
@@ -86,11 +87,22 @@ export default function Collections() {
   )
 
   return (
-    <section ref={root} data-tone="light" className="overflow-x-clip bg-bg py-14 md:py-20" aria-labelledby="colecoes-titulo">
-      <div className="container-page">
+    <section ref={root} data-tone="light" className="overflow-x-clip bg-bg py-14 md:py-20 lg:min-h-[760px] lg:py-24" aria-labelledby="colecoes-titulo">
+      <div className="container-page grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+        <div className="relative h-[320px] overflow-hidden rounded-3xl bg-espresso shadow-[0_24px_60px_-28px_rgb(43_27_20/0.45)] sm:h-[420px] lg:h-[560px]">
+          <Image
+            src="/collections-reader.png"
+            alt="Mulher aproveita um momento tranquilo para ler em uma biblioteca acolhedora"
+            fill
+            sizes="(min-width: 1024px) 45vw, 100vw"
+            className="object-cover object-center"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-espresso/25 via-transparent to-transparent" aria-hidden="true" />
+        </div>
+        <div className="min-w-0">
         <SectionHeading eyebrow="Explore" title="Coleções" id="colecoes-titulo" href="/produtos" linkLabel="Ver tudo" />
 
-        <ul className="grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-7">
+        <ul className="grid grid-cols-3 gap-x-3 gap-y-8 sm:grid-cols-4">
           {collections.map((c) => (
             <li key={c.label} data-magnet>
               <Link href={c.href} className="group flex flex-col items-center gap-3">
@@ -109,6 +121,7 @@ export default function Collections() {
             </li>
           ))}
         </ul>
+        </div>
       </div>
     </section>
   )

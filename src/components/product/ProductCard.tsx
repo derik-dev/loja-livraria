@@ -1,12 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Product } from '@/lib/types'
 import { formatCurrency, calculateDiscount } from '@/lib/utils'
-import { useCartStore } from '@/store/cartStore'
 import { useWishlist } from '@/hooks/useWishlist'
-import { useAuth } from '@/context/AuthContext'
 import { BookImage } from '@/components/zine'
 import { getMockCategoryLabel } from '@/lib/data/products'
 
@@ -23,10 +20,7 @@ interface ProductCardProps {
 
 /** Card de livro reutilizável: capa 2:3, preço em destaque, selo de desconto e ação principal. */
 export default function ProductCard({ product, priority = false, sizes, variant = 'card' }: ProductCardProps) {
-  const addItem = useCartStore((s) => s.addItem)
-  const router = useRouter()
   const { toggleWishlist, isWishlisted } = useWishlist()
-  const { user } = useAuth()
   const wishlisted = isWishlisted(product.id)
   const discount = product.originalPrice ? calculateDiscount(product.originalPrice, product.price) : null
   const soldOut = product.stock === 0
@@ -62,11 +56,11 @@ export default function ProductCard({ product, priority = false, sizes, variant 
       </div>
 
       <div className={`flex flex-1 flex-col ${flat ? 'mt-3' : 'mt-4 px-1'}`}>
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">{getMockCategoryLabel(product.category)}</p>
+        <p className="text-[16px] font-medium uppercase leading-tight tracking-[0.08em] text-muted">{getMockCategoryLabel(product.category)}</p>
         <Link href={`/produto/${product.slug}`} className="mt-1 focus-visible:rounded">
-          <h3 className="z-plain line-clamp-2 text-[15px] font-medium leading-snug text-ink">{product.name}</h3>
+          <h3 className="z-plain line-clamp-3 break-words text-[20px] font-medium leading-tight text-ink">{product.name}</h3>
         </Link>
-        {product.author && <p className="mt-1 truncate text-[13px] text-muted">{product.author}</p>}
+        {product.author && <p className="mt-1 line-clamp-2 break-words text-[18px] leading-tight text-muted">{product.author}</p>}
 
         <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <span className="text-xl font-semibold text-ink">{formatCurrency(product.price)}</span>
@@ -74,21 +68,15 @@ export default function ProductCard({ product, priority = false, sizes, variant 
         </div>
 
         <div className="mt-auto pt-4">
-          <button
-            type="button"
-            onClick={() => {
-              if (soldOut) return
-              if (!user) {
-                router.push(`/login?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`)
-                return
-              }
-              addItem(product)
-            }}
-            disabled={soldOut}
-            className={flat ? 'btn-outline w-full' : 'btn-primary w-full'}
-          >
-            {soldOut ? 'Esgotado' : 'Adicionar à sacola'}
-          </button>
+          {soldOut ? (
+            <button type="button" disabled className={`${flat ? 'btn-outline' : 'btn-primary'} w-full disabled:opacity-50`}>
+              Esgotado
+            </button>
+          ) : (
+            <Link href={`/produto/${product.slug}`} className={`${flat ? 'btn-outline' : 'btn-primary'} flex w-full justify-center`}>
+              Ver detalhes
+            </Link>
+          )}
         </div>
       </div>
     </article>

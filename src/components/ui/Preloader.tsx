@@ -113,7 +113,7 @@ export default function Preloader() {
               <div className="absolute inset-0 flex flex-col items-center justify-center rounded-r-md border border-tan/40 bg-marrom-medio" style={{ backfaceVisibility: 'hidden' }}>
                 <div className="absolute inset-3 rounded-sm border border-tan/50" aria-hidden="true" />
                 <p className="font-[family-name:var(--font-display)] text-2xl tracking-[0.18em] text-tan">{siteConfig.name.toUpperCase()}</p>
-                <p className="mt-2 text-[10px] uppercase tracking-[0.5em] text-creme/70">{siteConfig.logo.subtitle}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-[0.5em] text-creme">{siteConfig.logo.subtitle}</p>
               </div>
               <div className="absolute inset-0 rounded-l-md bg-creme" style={{ transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }} aria-hidden="true" />
             </div>

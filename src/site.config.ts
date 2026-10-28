@@ -17,8 +17,8 @@ export const siteConfig = {
   colors: {
     espresso: '#2B1B14',
     espressoDeep: '#1E120D',
-    creme: '#F6EFE3',
-    cremeCard: '#FBF6EC',
+    creme: '#FFFFFF',
+    cremeCard: '#F6F6F6',
     tan: '#D9A66B',
     marromMedio: '#8A5A3B',
     vinho: '#4A1F2A',
@@ -43,6 +43,27 @@ export const siteConfig = {
     poster: '/banners/ficcao.png',
     posterAlt: 'Estantes de uma livraria com luz quente',
     youtubeId: '',
+  },
+
+  /**
+   * Área de vídeo entre "Chegaram à estante" e "Mais procurados": o vídeo à esquerda e um texto sobre a experiência da livraria à direita.
+   * Coloque o arquivo em public/videos/ e aponte aqui (ex.: '/videos/loja.mp4'). Vazio = a área aparece vazia.
+   */
+  videoArea: {
+    src: '/videos/video.mp4',
+    poster: '',
+    eyebrow: 'A experiência Papelada',
+    title: 'Mais que comprar: um lugar para ficar.',
+    text: 'Na nossa livraria o livro certo encontra você entre estantes de madeira, café quente e atendimento de quem lê. Folheie com calma, peça uma indicação e leve para casa tudo embalado com cuidado.',
+    cta: { label: 'Conheça a loja', href: '/#loja' },
+    /** Texto que gira no selo sobre o vídeo. */
+    badge: 'VISITE A LOJA • ABERTO TODOS OS DIAS • ',
+    /** Números que contam de 0 até o valor quando a seção aparece (dados fictícios: troque pelos reais). */
+    stats: [
+      { value: 12000, prefix: '+', decimals: 0, label: 'livros no acervo' },
+      { value: 15, prefix: '', decimals: 0, label: 'anos de estante' },
+      { value: 4.9, prefix: '', decimals: 1, label: 'nota dos leitores' },
+    ],
   },
 
   newsletter: {

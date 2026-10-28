@@ -23,7 +23,7 @@ const promises = [
 ]
 
 const colTitle = 'text-sm font-semibold uppercase tracking-[0.14em] text-tan'
-const colLink = 'text-base text-creme/80 transition-colors hover:text-tan'
+const colLink = 'text-base text-creme transition-colors hover:text-tan'
 
 /** Rodapé escuro. O nome da loja, gigante, é revelado conforme o scroll (sobe de dentro de uma máscara). */
 export default function Footer() {
@@ -53,8 +53,8 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr]">
           <div className="col-span-2 lg:col-span-1">
             <BrandLogo textClassName="text-2xl" />
-            <p className="mt-3 text-sm text-creme/70">{BRAND_TAGLINE}</p>
-            <p className="mt-4 max-w-sm text-base leading-relaxed text-creme/80">
+            <p className="mt-3 text-sm text-creme">{BRAND_TAGLINE}</p>
+            <p className="mt-4 max-w-sm text-base leading-relaxed text-creme">
               Um catálogo organizado por quem gosta de livro: preço claro, estoque atualizado e entrega para todo o Brasil.
             </p>
           </div>
@@ -81,7 +81,7 @@ export default function Footer() {
             <h4 className={colTitle}>Compra segura</h4>
             <ul className="mt-4 space-y-2.5">
               {promises.map((p) => (
-                <li key={p} className="flex items-start gap-2 text-base text-creme/80">
+                <li key={p} className="flex items-start gap-2 text-base text-creme">
                   <span className="mt-0.5 text-tan" aria-hidden="true">✓</span>
                   {p}
                 </li>
@@ -91,7 +91,7 @@ export default function Footer() {
 
           <div className="col-span-2 lg:col-span-1">
             <h4 className={colTitle}>Loja física</h4>
-            <address className="mt-4 text-base not-italic leading-relaxed text-creme/80">
+            <address className="mt-4 text-base not-italic leading-relaxed text-creme">
               {a.street}, {a.district}<br />
               {a.city} - {a.state}<br />
               {a.hours}<br />
@@ -100,7 +100,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-creme/15 pt-6 text-sm text-creme/70 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-creme/15 pt-6 text-sm text-creme sm:flex-row">
           <p>© {new Date().getFullYear()} {BRAND_NAME}. Todos os direitos reservados.</p>
           <p>Pagamento via Pix</p>
         </div>

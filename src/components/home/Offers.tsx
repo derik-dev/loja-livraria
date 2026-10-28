@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Product } from '@/lib/types'
 import { formatCurrency, calculateDiscount } from '@/lib/utils'
 import { BookImage } from '@/components/zine'
-import BookCarousel from './BookCarousel'
+import ProductCard from '@/components/product/ProductCard'
 import SectionHeading from './SectionHeading'
 
 /** Ofertas e destaques: card "Oferta do dia" seguido dos livros em promoção, num carrossel com setas. */
@@ -45,9 +45,14 @@ export default function Offers({ products }: { products: Product[] }) {
   return (
     <section data-tone="light" className="relative overflow-x-clip bg-bg py-14 md:py-16" aria-labelledby="ofertas-titulo">
       {/* Só esta seção usa a largura total, com margem de 64px: título e cards começam mais à esquerda que o resto do site. */}
-      <div className="px-5 md:px-16">
+      <div className="container-page">
         <SectionHeading eyebrow="Preço especial" title="Ofertas e destaques" id="ofertas-titulo" href="/produtos" linkLabel="Ver todas" />
-        <BookCarousel books={rest} label="Ofertas e destaques" lead={featuredCard} />
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {featuredCard}
+          {rest.slice(0, 3).map((book) => (
+            <ProductCard key={book.id} product={book} variant="flat" sizes="(min-width: 1024px) 285px, 45vw" />
+          ))}
+        </div>
       </div>
     </section>
   )
