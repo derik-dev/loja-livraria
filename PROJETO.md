@@ -707,3 +707,36 @@ A loja deixou de ser de moda (Vero/Soberana) e virou a livraria **Papelada** (`B
 ### Hero com mostruário 3D (26/10/2026)
 - O hero ganhou um mostruário de 5 livros girando 360° sozinho (`home/Showcase3D.tsx` + `.carousel3d` em `themes/biblioteca.css`), sem setas. Velocidade: `--spin` (45s por volta). Pausa ao passar o mouse e para sob `prefers-reduced-motion`. Quantidade: `SHOWCASE_SIZE` em `home/Hero.tsx`.
 - Não rode `next build` com o `next dev` aberto: o dev passa a servir CSS velho. Pare o dev, rode o build e suba o dev de novo.
+
+### Paleta marrom-espresso + creme (27/10/2026)
+- Troca só de cores, nos tokens de `themes/biblioteca.css`: seções escuras em espresso (#1F1510) com texto creme (#F3E5CF) e destaque caramelo (#D9A066); seções claras em creme (#F4E8D6 / #FBF6EC) com texto espresso (#2A1A12) e caramelo queimado (#8F4F1F) para manter contraste AA.
+
+### Redesign "template vendável" — Fase 1 (base)
+- `src/site.config.ts`: nome, textos do hero, benefícios, cores, links, endereço e flags de seções (authors, video, blog, publishers, testimonials, physicalStore). `lib/brand.ts` só reexporta daqui.
+- `src/data/books.ts`: 24 livros de demonstração (10 com capa em `public/covers`, 14 com capa gerada). `lib/data/products.ts` reexporta como `mockProducts`.
+- Paleta fixa em tokens do Tailwind (`bg-espresso`, `bg-creme`, `text-tan`, `marrom-medio`...), definidos em `themes/biblioteca.css` e sobrescritos pelo `<html>` a partir do site.config. Botão principal em tan nos dois tons (`--cta`).
+- Títulos em Instrument Serif (peso 400 apenas); texto em DM Sans.
+- GSAP: registrar plugins só em `src/lib/gsap.ts`. Lenis em `components/providers/SmoothScroll.tsx` (desligado no /admin e com prefers-reduced-motion).
+- Barra de aviso com marquee (`components/layout/AnnouncementBar.tsx`) e links úteis no header.
+- Para testar build sem derrubar o dev: copiar o projeto sem `.next`/`node_modules` e usar `next build --webpack` (junction de node_modules não funciona com Turbopack).
+
+### Fase 2 — hero, cards e preloader
+- Fonte dos títulos trocada para Cinzel (`--font-cinzel`); texto corrido segue em DM Sans. Cinzel não tem itálico: destaque do título é cor tan + sublinhado desenhado (DrawSVG).
+- `components/home/Hero.tsx`: 3 camadas (fundo `public/banners/catalogo.png`; capas reais do catálogo, uma a uma, com queda + quique e flutuação; luz por cima que segue o mouse). Título com SplitText. Textos vêm de `site.config.ts`.
+- `components/home/BenefitCards.tsx`: 4 cards marrons translúcidos sobre a base do hero (benefícios do site.config).
+- `components/ui/Preloader.tsx` + `lib/preloader.ts`: roda 1x por sessão (sessionStorage `papelada:preloader`; apague a chave para rever), nunca com prefers-reduced-motion; hero e cards só animam depois dele.
+- Header: links úteis a partir de 1380px; testado em 1280, 1440 e 1920.
+
+### Fase 3 — ofertas, banner, equipe, lançamentos, ranking
+- Largura única: classe `.container-page` (max-w 1280px). Só os carrosséis sangram, e só para a direita (`BookCarousel` e o trilho de `Offers`).
+- `Offers.tsx`: scroll vertical vira horizontal (pin) com skew pela velocidade; no mobile/reduced-motion é carrossel nativo com snap.
+- `PromoBanner.tsx`: selo -40% carimbado + tremida + texto circular girando. `TeamPicks.tsx`: foto com clip-path + parallax e frases digitadas. `BookCarousel spread`: capas empilhadas que se espalham. `Ranking.tsx`: nº 1 grande + 4 linhas, números contando de 0.
+- `CategoryGrid` ("Navegue por categoria"), `CategoryChips`, `Deals` e `BestSellers` foram removidos da home; "Coleções" entra na Fase 4.
+- Cursor customizado: `components/ui/CustomCursor.tsx` (bolha "Ver" em elementos com `data-cursor`). Timeout de segurança do preloader: 6s (`lib/preloader.ts`).
+- Capas geradas (`BookCover`): blocos sólidos marrom/tan/creme/vinho + detalhe gráfico.
+
+### Fase 4 — coleções, depoimentos, loja física, FAQ, newsletter, rodapé
+- Seções novas usam `.container-page`; header também. Dados em `src/data/` (collections, testimonials, faq, authors, blog, publishers, teamPicks) e textos de banner/vídeo/newsletter em `site.config.ts`.
+- `site.config.ts`: `sections.{authors,video,blog,publishers,testimonials,physicalStore}` ligam/desligam as seções.
+- Ofertas: sem GSAP (o scroll fixo + skew foi removido por engasgar com CPU lenta); é um carrossel com setas (`BookCarousel` com o card "Oferta do dia" via prop `lead`).
+- Loja física: mapa estático ilustrado (SVG) nas cores da marca, sem iframe. Newsletter só valida o e-mail (falta ligar a um serviço). Vídeo só carrega após o clique (`video.youtubeId` vazio = aviso).

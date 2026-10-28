@@ -1,9 +1,11 @@
-// Nome da loja. Troque aqui ou via NEXT_PUBLIC_STORE_NAME no .env.local.
-export const BRAND_NAME = process.env.NEXT_PUBLIC_STORE_NAME ?? 'Papelada'
+import { siteConfig } from '@/site.config'
 
-export const BRAND_TAGLINE = 'livraria · catálogo de livros'
+// Nome, textos e regras da loja vêm de src/site.config.ts. Estes apelidos mantêm os imports antigos funcionando.
+export const BRAND_NAME = siteConfig.name
 
-export const BRAND_ANNOUNCEMENT = 'Frete grátis acima de R$ 399 · 2% off no Pix · Troca em até 30 dias'
+export const BRAND_TAGLINE = siteConfig.tagline
+
+export const BRAND_ANNOUNCEMENT = siteConfig.announcements.join(' · ')
 
 // Valor mínimo do carrinho para ganhar frete grátis
-export const FREE_SHIPPING_THRESHOLD = 399
+export const FREE_SHIPPING_THRESHOLD = siteConfig.freeShippingThreshold

@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { siteConfig } from '@/site.config'
 import { useAuth } from '@/context/AuthContext'
 import { SECTIONS } from '@/lib/nav'
 import BrandLogo from '@/components/ui/BrandLogo'
@@ -12,7 +14,9 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
-  const { user, signOut, openAuthModal } = useAuth()
+  const { user, signOut } = useAuth()
+  const pathname = usePathname()
+  const returnTo = pathname || '/'
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : ''
@@ -46,8 +50,8 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <p className="mb-6 text-sm text-muted">Olá, <strong className="text-ink">{(user.user_metadata?.name as string | undefined)?.split(' ')[0] ?? user.email}</strong></p>
         ) : (
           <div className="mb-6 flex gap-3">
-            <button onClick={() => { onClose(); openAuthModal() }} className="btn-primary flex-1">Entrar</button>
-            <button onClick={() => { onClose(); openAuthModal() }} className="btn-outline flex-1">Criar conta</button>
+            <Link href={`/login?returnTo=${encodeURIComponent(returnTo)}`} onClick={onClose} className="btn-primary flex-1">Entrar</Link>
+            <Link href={`/login?tab=signup&returnTo=${encodeURIComponent(returnTo)}`} onClick={onClose} className="btn-outline flex-1">Criar conta</Link>
           </div>
         )}
 
@@ -71,6 +75,9 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
         <ul className="mt-4">
           <li><Link href="/conta" onClick={onClose} className="block py-3 text-[15px] text-ink">Minhas compras</Link></li>
+          <li><Link href={siteConfig.links.track} onClick={onClose} className="block py-3 text-[15px] text-ink">Rastrear pedido</Link></li>
+          <li><Link href={siteConfig.links.help} onClick={onClose} className="block py-3 text-[15px] text-ink">Ajuda</Link></li>
+          <li><Link href={siteConfig.links.store} onClick={onClose} className="block py-3 text-[15px] text-ink">Loja física</Link></li>
           {user && (
             <li><button onClick={() => { signOut(); onClose() }} className="block w-full py-3 text-left text-[15px] text-muted">Sair</button></li>
           )}

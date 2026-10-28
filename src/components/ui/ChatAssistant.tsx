@@ -39,18 +39,18 @@ function ProductCard({ slug, products }: { slug: string; products: Product[] }) 
   return (
     <a
       href={`/produto/${p.slug}`}
-      className="group mt-2 flex items-center gap-3 border-2 border-[var(--z-ink)] bg-[var(--z-yellow)] p-2.5 shadow-[3px_3px_0_var(--z-ink)] transition-transform hover:-translate-y-0.5"
+      className="group mt-2 flex items-center gap-3 rounded-xl border border-border bg-card-hover p-2.5 transition-colors hover:border-accent"
     >
-      <div className="h-14 w-10 flex-shrink-0 overflow-hidden border-2 border-[var(--z-ink)]">
+      <div className="relative h-14 w-10 flex-shrink-0 overflow-hidden rounded-sm ring-1 ring-border">
         <BookImage src={p.images?.[0]} title={p.name} />
       </div>
       <div className="min-w-0">
-        <p className="text-xs font-semibold text-zinc-900 leading-tight truncate group-hover:underline">{p.name}</p>
-        <p className="text-xs text-zinc-500 mt-0.5">
+        <p className="truncate text-xs font-semibold leading-tight text-ink group-hover:underline">{p.name}</p>
+        <p className="mt-0.5 text-xs text-muted">
           {p.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
         </p>
       </div>
-      <svg className="h-4 w-4 text-zinc-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <svg className="ml-auto h-4 w-4 flex-shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </a>
@@ -59,11 +59,11 @@ function ProductCard({ slug, products }: { slug: string; products: Product[] }) 
 
 function TypingIndicator() {
   return (
-    <div className="flex w-fit items-center gap-1 border-2 border-[var(--z-ink)] bg-card px-3 py-2.5">
+    <div className="flex w-fit items-center gap-1 rounded-2xl rounded-bl-md border border-border bg-card px-3 py-2.5">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="h-2 w-2 animate-bounce rounded-full bg-[var(--z-ink)]"
+          className="h-2 w-2 animate-bounce rounded-full bg-muted"
           style={{ animationDelay: `${i * 150}ms` }}
         />
       ))}
@@ -129,18 +129,18 @@ export default function ChatAssistant() {
     <>
       {/* Painel de chat */}
       {open && (
-        <div className="fixed bottom-24 right-4 z-50 flex h-[500px] w-[calc(100vw-2rem)] flex-col overflow-hidden border-[3px] border-[var(--z-ink)] bg-[var(--z-paper)] shadow-[8px_8px_0_var(--z-ink)] sm:w-[380px]">
+        <div data-tone="dark" className="fixed bottom-24 right-4 z-50 flex h-[500px] w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-border-strong bg-bg shadow-[0_24px_60px_-20px_rgb(0_0_0/0.6)] sm:w-[380px]">
 
           {/* Header */}
-          <div className="flex flex-shrink-0 items-center gap-3 border-b-[3px] border-[var(--z-ink)] bg-[var(--z-yellow)] px-4 py-3">
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-[2.5px] border-[var(--z-ink)] bg-[var(--z-pink)]">
-              <span className="z-display text-base">V</span>
+          <div className="flex flex-shrink-0 items-center gap-3 border-b border-border bg-bg-alt px-4 py-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
+              <span className="text-base font-semibold">V</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="z-display text-lg leading-tight">Vera</p>
-              <p className="text-[10px] font-bold text-[var(--z-ink)]/70">Assistente da {BRAND_NAME}</p>
+              <p className="text-lg font-semibold leading-tight text-ink">Vera</p>
+              <p className="text-[11px] text-muted">Assistente da {BRAND_NAME}</p>
             </div>
-            <button onClick={() => setOpen(false)} className="flex h-8 w-8 items-center justify-center border-2 border-[var(--z-ink)] bg-card hover:bg-[var(--z-pink)]">
+            <button onClick={() => setOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full text-ink hover:bg-card-hover">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -157,8 +157,8 @@ export default function ChatAssistant() {
                   <div className={`max-w-[85%] ${isUser ? '' : 'space-y-1'}`}>
                     <div className={`px-3 py-2 text-sm leading-relaxed ${
                       isUser
-                        ? 'border-2 border-[var(--z-ink)] bg-[var(--z-ink)] font-medium text-[var(--z-paper)]'
-                        : 'border-2 border-[var(--z-ink)] bg-card font-medium'
+                        ? 'rounded-2xl rounded-br-md bg-accent text-on-accent'
+                        : 'rounded-2xl rounded-bl-md border border-border bg-card text-ink'
                     }`}>
                       {parts.map((part, j) =>
                         part.type === 'text'
@@ -183,7 +183,7 @@ export default function ChatAssistant() {
           </div>
 
           {/* Input */}
-          <div className="flex flex-shrink-0 items-end gap-2 border-t-[3px] border-[var(--z-ink)] bg-[var(--z-paper-2)] px-3 py-3">
+          <div className="flex flex-shrink-0 items-end gap-2 border-t border-border bg-bg-alt px-3 py-3">
             <textarea
               ref={inputRef}
               rows={1}
@@ -196,12 +196,12 @@ export default function ChatAssistant() {
               onKeyDown={handleKey}
               placeholder="Pergunte sobre um livro…"
               disabled={loading}
-              className="flex-1 resize-none overflow-hidden px-3 py-2 text-sm leading-relaxed disabled:opacity-50"
+              className="flex-1 resize-none overflow-hidden rounded-2xl border border-border-strong bg-card px-4 py-2 text-sm leading-relaxed text-ink placeholder:text-muted focus:border-accent focus:outline-none disabled:opacity-50"
             />
             <button
               onClick={send}
               disabled={loading || !input.trim()}
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center border-[2.5px] border-[var(--z-ink)] bg-[var(--z-red)] text-[#fff9ea] shadow-[3px_3px_0_var(--z-ink)] transition-transform hover:-translate-y-0.5 disabled:opacity-40"
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-accent text-on-accent transition-opacity hover:opacity-90 disabled:opacity-40"
             >
               <svg className="h-4 w-4 translate-x-[1px]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -214,7 +214,8 @@ export default function ChatAssistant() {
       {/* Botão flutuante */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full border-[3px] border-[var(--z-ink)] bg-[var(--z-pink)] text-[var(--z-ink)] shadow-[5px_5px_0_var(--z-ink)] transition-transform hover:-translate-y-1 hover:rotate-6"
+        data-tone="dark"
+        className="fixed bottom-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-border-strong bg-bg text-ink shadow-[0_12px_30px_-10px_rgb(0_0_0/0.6)] transition-transform hover:-translate-y-1"
         aria-label="Abrir chat"
       >
         {open ? (

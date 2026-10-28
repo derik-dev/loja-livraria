@@ -1,7 +1,7 @@
-/* Tema "biblioteca" — dark mode azul meia-noite.
-   Fonte única de cor: as variáveis abaixo. Sem amarelo e sem preto puro.
+/* Tema "biblioteca" — espresso, creme e tan (dourado). Paleta fixa em tokens: bg-espresso, bg-creme, text-tan...
+   Fonte única de cor: as variáveis abaixo. Sem preto puro.
    Regra 60-30-10: bg/bg-alt/card dominam, ink/muted para texto, accent só em ação principal, selos e estados ativos.
-   Títulos em Poppins, texto e preços em DM Sans.
+   Títulos em Cinzel, texto e preços em DM Sans. Cores da marca editáveis em src/site.config.ts.
 
    Tailwind v4: os tokens viram utilitários via @theme (bg-bg, bg-card, bg-card-hover, text-ink,
    text-muted, bg-accent, border-border). Texto sobre fundo accent é sempre text-bg.
@@ -13,20 +13,33 @@
 
 /* Temas por seção: `data-tone="dark"` ou `data-tone="light"` num wrapper/<section> troca as variáveis
    daquela seção. Fora disso vale o escuro. Componentes só leem as variáveis (sem hex solto). */
+/* Paleta da marca (fixa). Os valores podem ser trocados em src/site.config.ts (aplicados no <html>). */
+@theme static {
+  --color-espresso: #2B1B14;
+  --color-espresso-deep: #1E120D;
+  --color-creme: #F6EFE3;
+  --color-creme-card: #FBF6EC;
+  --color-tan: #D9A66B;        /* dourado: só em botões, preços e destaques */
+  --color-marrom-medio: #8A5A3B;
+  --color-vinho: #4A1F2A;     /* vinho escuro: capas geradas */
+}
+
 :root,
 [data-tone="dark"] {
-  --bg: #11151f;
-  --bg-alt: #151a26;        /* seções alternadas: um degrau acima do bg */
-  --card: #1a2030;
-  --card-2: #161c2a;        /* fim do gradiente dos cards */
-  --card-hover: #232b3f;
-  --footer: #0d1018;        /* rodapé: o ponto mais escuro, fecha a página */
-  --ink: #f1f3f9;
-  --muted: #a3abc0;         /* nunca abaixo disto (contraste AA) */
-  --accent: #8b9aff;
-  --on-accent: #0a0d14;      /* texto sobre fundo accent */
-  --border: rgb(255 255 255 / 0.1);
-  --border-strong: rgb(255 255 255 / 0.2); /* só para campos de formulário (contraste de interface) */
+  --bg: var(--color-espresso);
+  --bg-alt: var(--color-espresso-deep);   /* seções alternadas: um degrau mais fundo */
+  --card: color-mix(in srgb, var(--color-marrom-medio) 20%, var(--color-espresso));
+  --card-2: color-mix(in srgb, var(--color-marrom-medio) 14%, var(--color-espresso));  /* fim do gradiente dos cards */
+  --card-hover: color-mix(in srgb, var(--color-marrom-medio) 32%, var(--color-espresso));
+  --footer: var(--color-espresso-deep);
+  --ink: var(--color-creme);
+  --muted: color-mix(in srgb, var(--color-creme) 72%, var(--color-espresso));  /* nunca abaixo disto (contraste AA) */
+  --accent: var(--color-tan);
+  --on-accent: var(--color-espresso-deep);   /* texto sobre fundo accent */
+  --cta: var(--color-tan);                   /* botão principal: tan nos dois tons */
+  --on-cta: var(--color-espresso-deep);
+  --border: rgb(246 239 227 / 0.12);
+  --border-strong: rgb(246 239 227 / 0.28);  /* só para campos de formulário (contraste de interface) */
   --shadow-card: none;
 }
 
@@ -40,34 +53,38 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
+  --color-cta: var(--cta);
+  --color-on-cta: var(--on-cta);
   --color-on-image: var(--on-image);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
 }
 
 /* Texto sobre imagem (faixa escura que fica por cima das capas): igual nos dois tons */
-:root { --on-image: #f1f3f9; }
+:root { --on-image: #fbf3e6; }
 
 /* Tema claro */
 [data-tone="light"] {
-  --bg: #f5f6fa;
-  --bg-alt: #ffffff;
-  --card: #ffffff;
-  --card-2: #ffffff;
-  --card-hover: #eef0f8;
-  --ink: #12162b;
-  --muted: #5b6279;
-  --accent: #4453d6;
-  --on-accent: #ffffff;
-  --border: rgb(18 22 43 / 0.1);
-  --border-strong: rgb(18 22 43 / 0.28);
-  --shadow-card: 0 1px 2px rgb(18 22 43 / 0.06), 0 8px 24px rgb(18 22 43 / 0.06);
+  --bg: var(--color-creme);
+  --bg-alt: var(--color-creme-card);
+  --card: var(--color-creme-card);
+  --card-2: var(--color-creme-card);
+  --card-hover: color-mix(in srgb, var(--color-marrom-medio) 9%, var(--color-creme));
+  --ink: var(--color-espresso);
+  --muted: color-mix(in srgb, var(--color-espresso) 74%, var(--color-creme));
+  --accent: var(--color-marrom-medio);       /* texto e selos sobre creme (contraste AA); o tan fica nos botões */
+  --on-accent: var(--color-creme-card);
+  --cta: var(--color-tan);
+  --on-cta: var(--color-espresso-deep);
+  --border: rgb(43 27 20 / 0.12);
+  --border-strong: rgb(43 27 20 / 0.32);
+  --shadow-card: 0 1px 2px rgb(43 27 20 / 0.08), 0 8px 24px rgb(43 27 20 / 0.08);
   color-scheme: light;
 }
-/* Seções claras consecutivas alternam #F5F6FA e #FFFFFF, sem borda entre elas */
+/* Seções claras consecutivas alternam creme e creme-claro, sem borda entre elas */
 [data-tone="light"][data-surface="alt"] {
-  --bg: #ffffff;
-  --card-hover: #f5f6fa;
+  --bg: var(--color-creme-card);
+  --card-hover: var(--color-creme);
 }
 [data-tone="dark"] { color-scheme: dark; }
 [data-tone] {
@@ -76,7 +93,7 @@
 }
 
 :root[data-theme="biblioteca"] {
-  --font-display: var(--font-poppins), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-cinzel), Georgia, 'Times New Roman', serif;
   --font-body: var(--font-dm-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-hand: var(--font-poppins), system-ui, sans-serif;
 
@@ -95,12 +112,12 @@
   --bk-gold-light: var(--accent);
   --bk-gold-pale: var(--card-hover);
   --bk-gold-dark: var(--accent);
-  --bk-red: #ff7a8a;
-  --bk-green: #5fd3a2;
+  --bk-red: #ff9a82;
+  --bk-green: #9fd3a6;
   --z-paper: var(--bg);
   --z-paper-2: var(--card-hover);
   --z-ink: var(--ink);
-  --z-red: #ff7a8a;
+  --z-red: #ff9a82;
   --z-yellow: var(--accent);
   --z-pink: var(--card-hover);
   --z-blue: var(--accent);
@@ -115,19 +132,19 @@
   --radius-2xl: 16px;
 
   /* ── Neutros do Tailwind → escala escura (telas ainda não redesenhadas herdam o dark) ── */
-  --color-white: #1a2030;
-  --color-black: #11151f;
-  --color-zinc-50: #1a2030;
-  --color-zinc-100: #232b3f;
-  --color-zinc-200: #2d3650;
-  --color-zinc-300: #3a4560;
-  --color-zinc-400: #a3abc0;
-  --color-zinc-500: #adb5c8;
-  --color-zinc-600: #bcc3d4;
-  --color-zinc-700: #cfd4e1;
-  --color-zinc-800: #e0e4ee;
-  --color-zinc-900: #f1f3f9;
-  --color-zinc-950: #fafbfd;
+  --color-white: #2e2019;
+  --color-black: #1f1510;
+  --color-zinc-50: #2e2019;
+  --color-zinc-100: #3a2a21;
+  --color-zinc-200: #4a372c;
+  --color-zinc-300: #5e473a;
+  --color-zinc-400: #bfa98e;
+  --color-zinc-500: #c9b59c;
+  --color-zinc-600: #d6c4ad;
+  --color-zinc-700: #e2d3be;
+  --color-zinc-800: #ece0cd;
+  --color-zinc-900: #f3e5cf;
+  --color-zinc-950: #fbf3e6;
   --color-stone-50: var(--color-zinc-50);
   --color-stone-100: var(--color-zinc-100);
   --color-stone-200: var(--color-zinc-200);
@@ -170,12 +187,12 @@
   --color-slate-800: var(--color-zinc-800);
   --color-slate-900: var(--color-zinc-900);
   /* barra de frete grátis do carrinho: accent */
-  --color-sky-50: #1a2030;
-  --color-sky-100: #232b3f;
-  --color-sky-200: #3f4a7a;
-  --color-sky-500: #8b9aff;
-  --color-sky-600: #7b8bf5;
-  --color-sky-700: #aeb8ff;
+  --color-sky-50: #2e2019;
+  --color-sky-100: #3a2a21;
+  --color-sky-200: #6b4a30;
+  --color-sky-500: #d9a066;
+  --color-sky-600: #c98f55;
+  --color-sky-700: #e8bd8a;
 }
 
 /* O painel /admin mantém o visual original (ele marca a si mesmo com data-admin). */
@@ -262,11 +279,12 @@
   color: var(--on-accent);
 }
 
-/* Títulos grandes em Poppins; os pequenos (formulários, cartões) ficam na fonte do corpo. */
-:root[data-theme="biblioteca"]:not(:has([data-admin])) :is(h1, h2, h3):not([class*="text-base"]):not([class*="text-sm"]):not([class*="text-xs"]):not([class*="text-lg"]):not(.z-plain) {
+/* Cinzel só em título grande (h1/h2), curto e com tracking levemente positivo. Subtítulos, h3, preços, botões e
+   textos pequenos ficam em DM Sans. Texto grande fora de h1/h2: use a classe .font-display. */
+:root[data-theme="biblioteca"]:not(:has([data-admin])) :is(h1, h2):not([class*="text-base"]):not([class*="text-sm"]):not([class*="text-xs"]):not([class*="text-lg"]):not(.z-plain) {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   line-height: 1.12;
 }
 :root[data-theme="biblioteca"] main h1.text-xl {
@@ -300,7 +318,7 @@
 :root[data-theme="biblioteca"]:not(:has([data-admin])) :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgb(139 154 255 / 0.3);
+  box-shadow: 0 0 0 3px rgb(217 160 102 / 0.4);
 }
 :root[data-theme="biblioteca"] input::placeholder,
 :root[data-theme="biblioteca"] textarea::placeholder {
@@ -335,11 +353,11 @@
   transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 .btn-primary {
-  background: var(--accent);
-  color: var(--on-accent);
-  border: 1px solid var(--accent);
+  background: var(--cta, var(--accent));
+  color: var(--on-cta, var(--on-accent));
+  border: 1px solid var(--cta, var(--accent));
 }
-.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accent), var(--ink) 14%); border-color: color-mix(in srgb, var(--accent), var(--ink) 14%); }
+.btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--cta, var(--accent)), white 16%); border-color: color-mix(in srgb, var(--cta, var(--accent)), white 16%); }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-outline {
   background: transparent;
@@ -377,9 +395,23 @@
 }
 .surface-lift:hover { background: var(--card-hover); border-color: var(--border-strong); }
 
-/* Brilho radial suave atrás das capas do hero */
+/* Camada sobre a foto de fundo do hero: escurece o lado do texto e mantém um brilho suave atrás do mostruário.
+   Usa só --bg e --accent, então acompanha a paleta. */
+.hero-bg-overlay {
+  background:
+    radial-gradient(circle at 70% 30%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
+    linear-gradient(90deg, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 78%, transparent) 42%, color-mix(in srgb, var(--bg) 38%, transparent) 100%);
+}
+@media (max-width: 767px) {
+  .hero-bg-overlay {
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--bg) 90%, transparent) 0%, color-mix(in srgb, var(--bg) 82%, transparent) 55%, color-mix(in srgb, var(--bg) 62%, transparent) 100%);
+  }
+}
+
+/* Brilho radial suave (usado nas páginas de listagem) */
 .hero-glow {
-  background: radial-gradient(circle at 70% 30%, rgb(139 154 255 / 0.18), transparent 60%);
+  background: radial-gradient(circle at 70% 30%, rgb(217 160 102 / 0.18), transparent 60%);
 }
 @media (prefers-reduced-motion: no-preference) {
   .surface-lift:hover { transform: translateY(-2px); }
@@ -449,7 +481,7 @@ h1.z-display, h2.z-display { padding-top: 0.04em; }
 .bk-btn--soft:hover { background: var(--card-hover); border-color: var(--card-hover); }
 .z-btn--red, .z-btn--blue, .z-btn--ink, .bk-btn--gold, .bk-btn--burgundy { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .z-sticker { display: inline-block; padding: 0.15rem 0.5rem; background: var(--accent); color: var(--on-accent); border-radius: 6px; font-size: 0.68rem; font-weight: 700; line-height: 1.3; white-space: nowrap; }
-.z-mark { background: linear-gradient(transparent 62%, rgb(139 154 255 / 0.35) 62%); padding: 0 0.08em; margin: 0 -0.08em; }
+.z-mark { background: linear-gradient(transparent 62%, rgb(217 160 102 / 0.4) 62%); padding: 0 0.08em; margin: 0 -0.08em; }
 .z-wavy { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
 .z-halftone, .z-halftone--light, .z-lines { background-image: none; }
 .z-lift { transition: transform 0.2s ease; }
@@ -473,3 +505,42 @@ h1.z-display, h2.z-display { padding-top: 0.04em; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Lenis (scroll suave): ver components/providers/SmoothScroll.tsx */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Marquee da barra de aviso: só transform, pausa no hover e some com prefers-reduced-motion */
+@keyframes marquee-x { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { display: flex; width: max-content; animation: marquee-x 38s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+.font-display { font-family: var(--font-display); font-weight: 500; letter-spacing: 0.02em; }
+
+/* Cursor customizado: some o cursor do sistema só sobre as capas (data-cursor) */
+.has-custom-cursor [data-cursor],
+.has-custom-cursor [data-cursor] * {
+  cursor: none !important;
+}
+
+/* Largura única do conteúdo da home e das listagens. Só os carrosséis sangram, e só para a direita. */
+.container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1280px;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 768px) {
+  .container-page { padding-inline: 2.5rem; }
+}
+
+/* Assinatura manuscrita (depoimentos) */
+.font-signature { font-family: var(--font-caveat), cursive; font-weight: 600; }
+
+/* Pulso do ponto da loja no mapa estático: só transform e opacity */
+@keyframes map-pulse { 0% { transform: scale(0.6); opacity: 0.6; } 100% { transform: scale(2.2); opacity: 0; } }
+.map-pulse { transform-box: fill-box; transform-origin: center; animation: map-pulse 2.4s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) { .map-pulse { animation: none; } }

@@ -183,22 +183,22 @@ export default function ContaPage() {
   function field(key: keyof typeof form, label: string, opts?: { placeholder?: string; half?: boolean }) {
     return (
       <div className={opts?.half ? '' : 'sm:col-span-2'}>
-        <label className="block text-xs text-zinc-500 mb-1">{label}</label>
+        <label className="block text-xs text-muted mb-1">{label}</label>
         <input
           value={form[key] ?? ''}
           onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
           placeholder={opts?.placeholder}
-          className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 transition-colors"
+          className="w-full border border-border-strong rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent transition-colors"
         />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div data-tone="light" className="min-h-screen bg-bg flex flex-col">
 
       {/* Header da conta */}
-      <div className="border-b border-zinc-200">
+      <div className="border-b border-border">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           <Link href="/">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -211,15 +211,15 @@ export default function ContaPage() {
                 onClick={() => setActiveTab(tab.key)}
                 className={`text-sm whitespace-nowrap py-4 border-b-2 transition-colors ${
                   activeTab === tab.key
-                    ? 'border-zinc-900 text-zinc-900 font-semibold'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-800'
+                    ? 'border-accent text-ink font-semibold'
+                    : 'border-transparent text-muted hover:text-accent'
                 }`}
               >
                 {tab.label}
               </button>
             ))}
           </nav>
-          <div className="flex-shrink-0 h-8 w-8 rounded-full border border-zinc-300 flex items-center justify-center text-xs font-bold text-zinc-700">
+          <div className="flex-shrink-0 h-8 w-8 rounded-full border border-border-strong flex items-center justify-center text-xs font-bold text-ink">
             {initial}
           </div>
         </div>
@@ -231,10 +231,10 @@ export default function ContaPage() {
         {/* ── PERFIL ── */}
         {activeTab === 'perfil' && (
           <div className="space-y-4">
-            <h1 className="text-xl font-semibold text-zinc-900 mb-6">Perfil</h1>
+            <h1 className="text-xl font-semibold text-ink mb-6">Perfil</h1>
 
             {/* Card dados */}
-            <div className="border border-zinc-200 rounded-xl p-5">
+            <div className="border border-border rounded-xl p-5">
               <div className="flex items-center justify-between mb-3">
                 {editingName ? (
                   <input
@@ -243,32 +243,32 @@ export default function ContaPage() {
                     onChange={e => setNameValue(e.target.value)}
                     onBlur={() => setEditingName(false)}
                     onKeyDown={e => e.key === 'Enter' && setEditingName(false)}
-                    className="text-base font-semibold text-zinc-900 border-b border-zinc-400 focus:outline-none bg-transparent"
+                    className="text-base font-semibold text-ink border-b border-border-strong focus:outline-none bg-transparent"
                   />
                 ) : (
-                  <span className="text-base font-semibold text-zinc-900">{displayName}</span>
+                  <span className="text-base font-semibold text-ink">{displayName}</span>
                 )}
                 <button
                   onClick={() => setEditingName(true)}
-                  className="text-zinc-400 hover:text-zinc-700 transition-colors ml-2"
+                  className="text-muted hover:text-ink transition-colors ml-2"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
                   </svg>
                 </button>
               </div>
-              <p className="text-xs text-zinc-400 mb-0.5">E-mail</p>
-              <p className="text-sm text-zinc-700">{email}</p>
+              <p className="text-xs text-muted mb-0.5">E-mail</p>
+              <p className="text-sm text-ink">{email}</p>
             </div>
 
             {/* Card endereços */}
-            <div className="border border-zinc-200 rounded-xl p-5">
+            <div className="border border-border rounded-xl p-5">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-base font-semibold text-zinc-900">Endereços</span>
+                <span className="text-base font-semibold text-ink">Endereços</span>
                 {!showForm && (
                   <button
                     onClick={openNew}
-                    className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+                    className="text-sm text-muted hover:text-accent transition-colors"
                   >
                     + Adicionar
                   </button>
@@ -277,24 +277,24 @@ export default function ContaPage() {
 
               {/* Form novo/editar */}
               {showForm && (
-                <form onSubmit={handleSave} className="mb-5 border border-zinc-100 rounded-lg p-4 bg-zinc-50">
-                  <p className="text-sm font-semibold text-zinc-800 mb-4">
+                <form onSubmit={handleSave} className="mb-5 border border-border rounded-lg p-4 bg-bg-alt">
+                  <p className="text-sm font-semibold text-ink mb-4">
                     {editingId ? 'Editar endereço' : 'Novo endereço'}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {field('name', 'Nome do destinatário')}
                     <div>
-                      <label className="block text-xs text-zinc-500 mb-1">CEP</label>
+                      <label className="block text-xs text-muted mb-1">CEP</label>
                       <div className="relative">
                         <input
                           value={form.zip}
                           onChange={e => handleZipChange(e.target.value)}
                           placeholder="00000-000"
                           maxLength={8}
-                          className="w-full border border-zinc-300 rounded-lg px-3 py-2 text-sm text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 transition-colors pr-8"
+                          className="w-full border border-border-strong rounded-lg px-3 py-2 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-accent transition-colors pr-8"
                         />
                         {cepLoading && (
-                          <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-zinc-400" fill="none" viewBox="0 0 24 24">
+                          <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
                           </svg>
@@ -314,14 +314,14 @@ export default function ContaPage() {
                     <button
                       type="submit"
                       disabled={saving}
-                      className="px-5 py-2 bg-zinc-900 text-white text-xs font-bold uppercase tracking-[0.14em] rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50"
+                      className="px-5 py-2 bg-accent text-on-accent text-xs font-bold uppercase tracking-[0.14em] rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
                     >
                       {saving ? 'Salvando...' : 'Salvar'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowForm(false)}
-                      className="px-5 py-2 border border-zinc-300 text-xs font-bold uppercase tracking-[0.14em] rounded-lg text-zinc-600 hover:border-zinc-900 transition-colors"
+                      className="px-5 py-2 border border-border-strong text-xs font-bold uppercase tracking-[0.14em] rounded-lg text-muted hover:border-accent transition-colors"
                     >
                       Cancelar
                     </button>
@@ -331,21 +331,21 @@ export default function ContaPage() {
 
               {/* Lista */}
               {loadingAddresses ? (
-                <p className="text-sm text-zinc-400">Carregando...</p>
+                <p className="text-sm text-muted">Carregando...</p>
               ) : addresses.length === 0 ? (
-                <p className="text-sm text-zinc-400 italic">Nenhum endereço cadastrado.</p>
+                <p className="text-sm text-muted italic">Nenhum endereço cadastrado.</p>
               ) : (
                 <div className="space-y-3">
                   {addresses.map((addr) => (
-                    <div key={addr.id} className="border border-zinc-100 rounded-lg p-4">
+                    <div key={addr.id} className="border border-border rounded-lg p-4">
                       <div className="flex items-start justify-between gap-2">
-                        <div className="text-sm text-zinc-700 leading-relaxed">
+                        <div className="text-sm text-ink leading-relaxed">
                           {addr.is_default && (
-                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-400 mb-1">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted mb-1">
                               Endereço padrão
                             </p>
                           )}
-                          <p className="font-semibold text-zinc-900">{addr.name}</p>
+                          <p className="font-semibold text-ink">{addr.name}</p>
                           <p>{addr.street}, {addr.number}{addr.complement ? `, ${addr.complement}` : ''}</p>
                           {addr.neighborhood && <p>{addr.neighborhood}</p>}
                           <p>{addr.zip} {addr.city} {addr.state}</p>
@@ -353,7 +353,7 @@ export default function ContaPage() {
                         </div>
                         <button
                           onClick={() => openEdit(addr)}
-                          className="text-zinc-400 hover:text-zinc-700 flex-shrink-0"
+                          className="text-muted hover:text-ink flex-shrink-0"
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
@@ -364,7 +364,7 @@ export default function ContaPage() {
                         {!addr.is_default && (
                           <button
                             onClick={() => handleSetDefault(addr.id)}
-                            className="text-xs text-zinc-500 hover:text-zinc-900 underline underline-offset-2 transition-colors"
+                            className="text-xs text-muted hover:text-accent underline underline-offset-2 transition-colors"
                           >
                             Definir como padrão
                           </button>
@@ -386,7 +386,7 @@ export default function ContaPage() {
             <div className="pt-2">
               <button
                 onClick={handleSignOut}
-                className="border border-zinc-300 rounded-lg px-5 py-2 text-sm text-zinc-700 hover:border-zinc-900 hover:text-zinc-900 transition-colors"
+                className="border border-border-strong rounded-lg px-5 py-2 text-sm text-ink hover:border-accent hover:text-accent transition-colors"
               >
                 Sair
               </button>
@@ -397,44 +397,44 @@ export default function ContaPage() {
         {/* ── PEDIDOS ── */}
         {activeTab === 'pedidos' && (
           <div>
-            <h1 className="text-xl font-semibold text-zinc-900 mb-6">Pedidos</h1>
+            <h1 className="text-xl font-semibold text-ink mb-6">Pedidos</h1>
             {loadingOrders ? (
-              <p className="text-sm text-zinc-400">Carregando...</p>
+              <p className="text-sm text-muted">Carregando...</p>
             ) : orders.length === 0 ? (
-              <div className="border border-zinc-200 rounded-xl p-8 text-center">
-                <p className="text-sm text-zinc-400">Você ainda não fez nenhum pedido.</p>
-                <Link href="/produtos" className="inline-block mt-4 text-xs font-bold uppercase tracking-[0.16em] underline underline-offset-4 text-zinc-600 hover:text-zinc-900 transition-colors">
+              <div className="border border-border rounded-xl p-8 text-center">
+                <p className="text-sm text-muted">Você ainda não fez nenhum pedido.</p>
+                <Link href="/produtos" className="inline-block mt-4 text-xs font-bold uppercase tracking-[0.16em] underline underline-offset-4 text-muted hover:text-accent transition-colors">
                   Ver produtos
                 </Link>
               </div>
             ) : (
               <div className="space-y-3">
                 {orders.map((order) => (
-                  <div key={order.id} className="border border-zinc-200 rounded-xl p-5">
+                  <div key={order.id} className="border border-border rounded-xl p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-sm font-semibold text-zinc-900">{order.id}</p>
-                        <p className="text-sm text-zinc-600 mt-0.5">{order.product_name}</p>
-                        <p className="text-xs text-zinc-400 mt-1">
+                        <p className="text-sm font-semibold text-ink">{order.id}</p>
+                        <p className="text-sm text-muted mt-0.5">{order.product_name}</p>
+                        <p className="text-xs text-muted mt-1">
                           {order.items} {order.items === 1 ? 'item' : 'itens'} · {new Date(order.created_at).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="text-sm font-bold text-zinc-900">{formatCurrency(order.total)}</p>
+                        <p className="text-sm font-bold text-ink">{formatCurrency(order.total)}</p>
                         <span className={`inline-block mt-1 text-xs font-semibold px-2.5 py-0.5 rounded-full ${
-                          order.status === 'Enviado' ? 'bg-blue-100 text-blue-700' :
+                          order.status === 'Enviado' ? 'bg-blue-100 text-accent' :
                           order.status === 'Cancelado' ? 'bg-red-100 text-red-700' :
                           order.status === 'Novo' ? 'bg-violet-100 text-violet-700' :
-                          'bg-zinc-100 text-zinc-600'
+                          'bg-card-hover text-muted'
                         }`}>
                           {order.status}
                         </span>
                       </div>
                     </div>
-                    <div className="mt-3 pt-3 border-t border-zinc-100">
+                    <div className="mt-3 pt-3 border-t border-border">
                       <Link
                         href={`/rastreio/${encodeURIComponent(order.id)}`}
-                        className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-600 hover:text-zinc-900 underline underline-offset-2 transition-colors"
+                        className="text-xs font-bold uppercase tracking-[0.12em] text-muted hover:text-accent underline underline-offset-2 transition-colors"
                       >
                         Rastrear pedido →
                       </Link>
@@ -449,10 +449,10 @@ export default function ContaPage() {
         {/* ── FAVORITOS ── */}
         {activeTab === 'favoritos' && (
           <div>
-            <h1 className="text-xl font-semibold text-zinc-900 mb-6">Favoritos</h1>
-            <div className="border border-zinc-200 rounded-xl p-8 text-center">
-              <p className="text-sm text-zinc-400">Você não tem produtos favoritos ainda.</p>
-              <Link href="/produtos" className="inline-block mt-4 text-xs font-bold uppercase tracking-[0.16em] underline underline-offset-4 text-zinc-600 hover:text-zinc-900 transition-colors">
+            <h1 className="text-xl font-semibold text-ink mb-6">Favoritos</h1>
+            <div className="border border-border rounded-xl p-8 text-center">
+              <p className="text-sm text-muted">Você não tem produtos favoritos ainda.</p>
+              <Link href="/produtos" className="inline-block mt-4 text-xs font-bold uppercase tracking-[0.16em] underline underline-offset-4 text-muted hover:text-accent transition-colors">
                 Explorar produtos
               </Link>
             </div>
@@ -462,9 +462,9 @@ export default function ContaPage() {
         {/* ── TROCAS ── */}
         {activeTab === 'trocas' && (
           <div>
-            <h1 className="text-xl font-semibold text-zinc-900 mb-6">Trocas</h1>
-            <div className="border border-zinc-200 rounded-xl p-8 text-center">
-              <p className="text-sm text-zinc-400">Nenhuma solicitação de troca encontrada.</p>
+            <h1 className="text-xl font-semibold text-ink mb-6">Trocas</h1>
+            <div className="border border-border rounded-xl p-8 text-center">
+              <p className="text-sm text-muted">Nenhuma solicitação de troca encontrada.</p>
             </div>
           </div>
         )}
@@ -472,14 +472,14 @@ export default function ContaPage() {
         {/* ── SUPORTE ── */}
         {activeTab === 'suporte' && (
           <div>
-            <h1 className="text-xl font-semibold text-zinc-900 mb-6">Suporte</h1>
-            <div className="border border-zinc-200 rounded-xl p-6 space-y-4">
-              <p className="text-sm text-zinc-600">Precisa de ajuda? Entre em contato pelo WhatsApp ou e-mail.</p>
+            <h1 className="text-xl font-semibold text-ink mb-6">Suporte</h1>
+            <div className="border border-border rounded-xl p-6 space-y-4">
+              <p className="text-sm text-muted">Precisa de ajuda? Entre em contato pelo WhatsApp ou e-mail.</p>
               <a
                 href="https://wa.me/5500000000000"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-zinc-300 rounded-lg px-5 py-2.5 text-sm text-zinc-700 hover:border-zinc-900 hover:text-zinc-900 transition-colors"
+                className="inline-flex items-center gap-2 border border-border-strong rounded-lg px-5 py-2.5 text-sm text-ink hover:border-accent hover:text-accent transition-colors"
               >
                 WhatsApp
               </a>
@@ -490,10 +490,10 @@ export default function ContaPage() {
       </div>
 
       {/* Footer */}
-      <div className="border-t border-zinc-100 mt-auto">
+      <div className="border-t border-border mt-auto">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-wrap gap-4 justify-center">
           {['Política de reembolso', 'Frete', 'Política de privacidade', 'Termos de serviço', 'Cancelamentos', 'Informações de contato'].map((item) => (
-            <Link key={item} href="#" className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors underline underline-offset-2">
+            <Link key={item} href="#" className="text-xs text-muted hover:text-ink transition-colors underline underline-offset-2">
               {item}
             </Link>
           ))}

@@ -16,32 +16,31 @@ export default function CarrinhoPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-24 text-center">
-        <div className="z-card relative mx-auto inline-block -rotate-2 bg-[var(--z-pink)] px-10 py-8">
-          <h1 className="z-display text-5xl">Carrinho vazio</h1>
-          <p className="z-hand text-3xl">nenhum livro na sacola</p>
+      <div data-tone="light" className="bg-bg px-4 py-24 text-center">
+        <div className="surface mx-auto max-w-md px-10 py-10">
+          <h1 className="text-3xl text-ink">Sua sacola está vazia</h1>
+          <p className="mt-2 text-sm text-muted">Dá uma volta pelas estantes, a gente espera.</p>
+          <Link href="/produtos" className="btn-primary mt-6">Explorar livros</Link>
         </div>
-        <p className="mb-8 mt-8 text-base font-medium">Dá uma volta pelas estantes, a gente espera.</p>
-        <Link href="/produtos" className="z-btn z-btn--ink">Explorar livros →</Link>
       </div>
     )
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-10">
-        <p className="z-hand text-2xl">conferindo a sacola</p>
-        <h1 className="z-display text-[clamp(2.4rem,6vw,4.5rem)]">Meu carrinho</h1>
-      </div>
+    <div data-tone="light" className="bg-bg">
+      <div className="mx-auto max-w-[1200px] px-4 py-10 md:px-8 md:py-14">
+        <div className="mb-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">Conferindo a sacola</p>
+          <h1 className="mt-1.5 text-3xl text-ink md:text-4xl">Meu carrinho</h1>
+        </div>
 
-      <div className="grid gap-10 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <div className="border-[3px] border-[var(--z-ink)] bg-card p-5 shadow-[8px_8px_0_var(--z-ink)]">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
+          <div className="surface p-5 md:p-6">
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="z-plain text-sm font-bold uppercase tracking-[0.14em]">
+              <h2 className="text-sm font-semibold text-muted">
                 {items.length} {items.length === 1 ? 'livro' : 'livros'}
               </h2>
-              <button onClick={clearCart} className="text-xs font-bold underline underline-offset-4 hover:text-[var(--z-red)]">
+              <button onClick={clearCart} className="text-xs font-semibold text-accent underline-offset-4 hover:underline">
                 Esvaziar
               </button>
             </div>
@@ -49,39 +48,37 @@ export default function CarrinhoPage() {
               <CartItem key={item.product.id} item={item} />
             ))}
           </div>
-        </div>
 
-        <div className="lg:col-span-1">
-          <div className="sticky top-28 border-[3px] border-[var(--z-ink)] bg-[var(--z-yellow)] p-6 shadow-[8px_8px_0_var(--z-ink)]">
-            <h2 className="z-display mb-5 text-3xl">Resumo</h2>
+          <aside data-tone="dark" className="surface h-fit p-6 lg:sticky lg:top-6">
+            <h2 className="mb-5 text-2xl text-ink">Resumo</h2>
 
-            <div className="space-y-3 text-sm font-medium">
+            <div className="space-y-3 text-sm text-ink">
               <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span className="font-bold">{formatCurrency(total)}</span>
+                <span className="text-muted">Subtotal</span>
+                <span className="font-semibold">{formatCurrency(total)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Frete</span>
-                <span className="font-bold">{shipping === 0 ? 'Grátis' : formatCurrency(shipping)}</span>
+                <span className="text-muted">Frete</span>
+                <span className="font-semibold">{shipping === 0 ? 'Grátis' : formatCurrency(shipping)}</span>
               </div>
               {shipping > 0 && (
-                <p className="border-2 border-dashed border-[var(--z-ink)] bg-[var(--z-paper)] p-2.5 text-xs font-bold">
-                  Faltam {formatCurrency(FREE_SHIPPING_THRESHOLD - total)} pro frete grátis!
+                <p className="rounded-lg border border-border bg-bg-alt p-3 text-xs text-muted">
+                  Faltam <strong className="text-accent">{formatCurrency(FREE_SHIPPING_THRESHOLD - total)}</strong> para o frete grátis.
                 </p>
               )}
-              <div className="flex justify-between border-t-[3px] border-[var(--z-ink)] pt-4">
-                <span className="z-display text-xl">Total</span>
-                <span className="z-display text-2xl">{formatCurrency(finalTotal)}</span>
+              <div className="flex items-baseline justify-between border-t border-border pt-4">
+                <span className="text-base font-semibold">Total</span>
+                <span className="text-2xl font-semibold">{formatCurrency(finalTotal)}</span>
               </div>
             </div>
 
             <div className="mt-6 space-y-3">
-              <Link href="/checkout" className="z-btn z-btn--red w-full !py-4 !text-base">Finalizar compra →</Link>
-              <Link href="/produtos" className="z-btn z-btn--paper w-full !text-sm">Continuar comprando</Link>
+              <Link href="/checkout" className="btn-primary w-full !min-h-[52px]">Finalizar compra</Link>
+              <Link href="/produtos" className="btn-outline w-full">Continuar comprando</Link>
             </div>
 
-            <p className="mt-5 text-center text-xs font-bold">Pagamento por Pix, com 2% off.</p>
-          </div>
+            <p className="mt-5 text-center text-xs text-muted">Pagamento por Pix, com 2% off.</p>
+          </aside>
         </div>
       </div>
     </div>

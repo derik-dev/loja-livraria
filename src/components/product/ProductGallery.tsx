@@ -36,24 +36,23 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
   return (
     <>
       {images.length === 0 ? (
-        <div className="z-card mx-auto aspect-[2/3] w-full max-w-md overflow-hidden"><BookCover title={alt} /></div>
+        <div className="relative mx-auto aspect-[2/3] w-full max-w-md overflow-hidden rounded-sm shadow-[var(--shadow-card)] ring-1 ring-border"><BookCover title={alt} /></div>
       ) : (
-        <div className="mx-auto w-full max-w-xl">
+        <div className="mx-auto w-full max-w-md">
           <div
-            className="z-tape relative -rotate-1 cursor-zoom-in border-[3px] border-[var(--z-ink)] bg-[var(--z-paper-2)] shadow-[10px_10px_0_var(--z-ink)]"
+            className="relative cursor-zoom-in overflow-hidden rounded-sm bg-card-hover shadow-[0_24px_50px_-18px_rgb(42_26_18/0.55)] ring-1 ring-border"
             onClick={() => setLightbox(0)}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={first} alt={alt} className="aspect-[2/3] w-full object-cover" />
           </div>
           {rest.length > 0 && (
-            <div className="mt-10 grid grid-cols-3 gap-4">
+            <div className="mt-4 grid grid-cols-4 gap-3">
               {rest.map((src, i) => (
                 <button
                   key={i}
                   onClick={() => setLightbox(i + 1)}
-                  className="z-lift relative overflow-hidden border-[3px] border-[var(--z-ink)] bg-[var(--z-paper-2)] shadow-[4px_4px_0_var(--z-ink)]"
-                  style={{ transform: `rotate(${i % 2 === 0 ? 2 : -2}deg)` }}
+                  className="relative overflow-hidden rounded-sm bg-card-hover ring-1 ring-border transition-opacity hover:opacity-80"
                   aria-label={`Ver foto ${i + 2}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -68,7 +67,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
       {/* Lightbox */}
       {lightbox !== null && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          data-tone="dark" className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 text-ink"
           onClick={() => setLightbox(null)}
         >
           {/* Fechar */}
@@ -131,7 +130,7 @@ export default function ProductGallery({ images, alt }: ProductGalleryProps) {
                 <button
                   key={i}
                   onClick={e => { e.stopPropagation(); setLightbox(i) }}
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${i === lightbox ? 'bg-white' : 'bg-white/30'}`}
+                  className={`w-1.5 h-1.5 rounded-full transition-colors ${i === lightbox ? 'bg-[#fff]' : 'bg-[#fff]/30'}`}
                 />
               ))}
             </div>

@@ -13,7 +13,7 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
 
   return (
     <>
-      {!hideChrome && <Header />}
+      {!hideChrome && <Header flow />}
       <main className="min-h-screen">{children}</main>
       {!hideChrome && <Footer />}
       {!hideChrome && <CartDrawer />}

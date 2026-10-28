@@ -99,12 +99,13 @@ export default function ProdutosPage() {
   const activeSortLabel = SORT_OPTIONS.find((o) => o.value === filters.sortBy)?.label ?? 'Mais recentes'
 
   return (
-    <div className="bg-white min-h-screen">
-
-      <PageHero title="Todos os livros" note="pode entrar, a casa é sua" color="yellow" />
+    <div>
+      <div data-tone="dark">
+        <PageHero title="Todos os livros" note="Catálogo completo" image="/banners/catalogo.png" wide />
+      </div>
 
       {/* ── MAIN CONTENT ───────────────────────────────────── */}
-      <div className="px-4 sm:px-14 lg:px-20 py-4 sm:py-6">
+      <div data-tone="light" className="min-h-[60vh] px-4 py-8 md:px-12 md:py-12 lg:px-20">
 
         {/* ── AI SEARCH BAR ── */}
         <div className="mb-5">
@@ -114,9 +115,9 @@ export default function ProdutosPage() {
               value={query}
               onChange={(e) => handleQueryChange(e.target.value)}
               placeholder="Descreva o livro que você quer — ex: 'um romance leve pra viagem'"
-              className="w-full border border-zinc-300 bg-white px-4 py-3 pr-10 text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-900 transition-colors"
+              className="w-full rounded-full border border-border-strong bg-card px-5 py-3 pr-12 text-sm text-ink placeholder:text-muted transition-colors focus:border-accent focus:outline-none"
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted">
               {aiLoading ? (
                 <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -130,7 +131,7 @@ export default function ProdutosPage() {
             </span>
           </div>
           {query.trim() && (
-            <p className="mt-1.5 text-xs text-zinc-400">
+            <p className="mt-2 text-xs text-muted">
               {aiLoading
                 ? 'Procurando nas estantes…'
                 : aiResults !== null
@@ -143,7 +144,7 @@ export default function ProdutosPage() {
         {/* Sort bar */}
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center gap-2">
-            <p className="text-xs text-zinc-500 uppercase tracking-[0.14em]">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
               Resultado ({loading ? '...' : filtered.length})
             </p>
           </div>
@@ -151,7 +152,7 @@ export default function ProdutosPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setFiltersVisible((v) => !v)}
-              className="lg:hidden border border-zinc-900 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-zinc-900 hover:bg-zinc-900 hover:text-white transition-colors"
+              className="btn-outline !min-h-[40px] !px-4 !py-2 !text-sm lg:hidden"
             >
               Filtro
             </button>
@@ -161,9 +162,9 @@ export default function ProdutosPage() {
               <div className="relative" ref={sortRef}>
                 <button
                   onClick={() => setSortOpen((v) => !v)}
-                  className="flex items-center gap-3 border border-zinc-300 px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-zinc-800 hover:border-zinc-900 transition-colors whitespace-nowrap"
+                  className="btn-outline !min-h-[40px] !gap-3 !px-4 !py-2 !text-sm whitespace-nowrap"
                 >
-                  ORDENAR POR
+                  Ordenar por
                   <svg
                     className={`h-3 w-3 transition-transform duration-200 ${sortOpen ? 'rotate-180' : ''}`}
                     fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
@@ -172,7 +173,7 @@ export default function ProdutosPage() {
                   </svg>
                 </button>
                 {sortOpen && (
-                  <div className="absolute right-0 top-full mt-1 z-30 bg-white border-[3px] border-[var(--z-ink)] min-w-[200px] shadow-[5px_5px_0_var(--z-ink)]">
+                  <div className="surface absolute right-0 top-full z-30 mt-2 min-w-[210px] overflow-hidden py-1">
                     {SORT_OPTIONS.map((opt) => (
                       <button
                         key={opt.value}
@@ -180,8 +181,8 @@ export default function ProdutosPage() {
                           setFilters((f) => ({ ...f, sortBy: opt.value }))
                           setSortOpen(false)
                         }}
-                        className={`w-full text-left px-5 py-3 text-xs uppercase tracking-[0.14em] hover:bg-zinc-50 transition-colors ${
-                          filters.sortBy === opt.value ? 'font-bold text-zinc-900' : 'text-zinc-500'
+                        className={`w-full px-5 py-2.5 text-left text-sm transition-colors hover:bg-card-hover ${
+                          filters.sortBy === opt.value ? 'font-semibold text-accent' : 'text-ink'
                         }`}
                       >
                         {opt.label}
@@ -195,21 +196,23 @@ export default function ProdutosPage() {
         </div>
 
         {/* Sidebar + Grid */}
-        <div className="flex gap-10">
+        <div className="flex gap-10 xl:gap-14">
 
           {/* Desktop sidebar */}
-          <aside className="hidden lg:block w-48 flex-shrink-0">
+          <aside className="hidden w-56 flex-shrink-0 lg:block">
+            <div className="sticky top-6">
             <ProductFilters filters={filters} onChange={setFilters} />
+            </div>
           </aside>
 
           {/* Mobile filters overlay */}
           {filtersVisible && (
             <div className="lg:hidden fixed inset-0 z-50 flex">
-              <div className="absolute inset-0 bg-black/40" onClick={() => setFiltersVisible(false)} />
-              <div className="relative ml-auto w-72 bg-white h-full overflow-y-auto p-8">
+              <div className="absolute inset-0 bg-black/50" onClick={() => setFiltersVisible(false)} />
+              <div className="relative ml-auto h-full w-72 overflow-y-auto bg-bg p-8 text-ink">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xs font-bold uppercase tracking-[0.22em] text-zinc-900">Filtros</h2>
-                  <button onClick={() => setFiltersVisible(false)} className="text-zinc-400 hover:text-zinc-900">
+                  <h2 className="text-sm font-semibold text-ink">Filtros</h2>
+                  <button onClick={() => setFiltersVisible(false)} className="text-muted hover:text-ink">
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -223,13 +226,13 @@ export default function ProdutosPage() {
           {/* Product grid */}
           <div className="flex-1 min-w-0">
             {loading ? (
-              <p className="text-sm text-zinc-400 py-20 text-center">Folheando as estantes…</p>
+              <p className="py-20 text-center text-sm text-muted">Folheando as estantes…</p>
             ) : aiLoading && aiResults === null ? (
-              <p className="text-sm text-zinc-400 py-20 text-center">Procurando nas estantes…</p>
+              <p className="py-20 text-center text-sm text-muted">Procurando nas estantes…</p>
             ) : filtered.length === 0 && query.trim() ? (
               <div className="py-20 text-center">
-                <p className="text-sm font-medium text-zinc-700 mb-1">Nenhum livro encontrado para &quot;{query}&quot;</p>
-                <p className="text-xs text-zinc-400">Tente descrever de outra forma.</p>
+                <p className="mb-1 text-sm font-medium text-ink">Nenhum livro encontrado para &quot;{query}&quot;</p>
+                <p className="text-xs text-muted">Tente descrever de outra forma.</p>
               </div>
             ) : (
               <ProductGrid products={filtered} />

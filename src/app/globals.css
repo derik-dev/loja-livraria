@@ -8,3 +8,89 @@
 html {
   scroll-behavior: smooth;
 }
+
+.home-hero {
+  min-height: clamp(480px, 60vh, 590px);
+}
+
+.home-hero-content {
+  min-height: inherit;
+}
+
+.home-hero-shade {
+  background:
+    linear-gradient(90deg, rgb(25 12 6 / 48%) 0%, rgb(25 12 6 / 35%) 32%, rgb(25 12 6 / 10%) 58%, transparent 76%),
+    linear-gradient(0deg, rgb(25 12 6 / 18%), transparent 24%);
+}
+
+:root[data-theme='biblioteca'] .home-hero .home-hero-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.home-hero-title em {
+  color: #ffc05f;
+  font-weight: 400;
+}
+
+.home-hero-primary {
+  background: #ffbd59;
+}
+
+.home-hero-primary:hover {
+  background: #ffcb78;
+}
+
+.home-category-band {
+  background: linear-gradient(110deg, #24150f, #311a10 52%, #25150e);
+}
+
+.home-header[data-tone='dark'] {
+  background: transparent;
+}
+
+.home-header-flow[data-tone='dark'] {
+  background: #23130c;
+}
+
+.home-announcement {
+  min-height: 44px;
+  background: rgb(35 19 12 / 78%);
+  border-color: rgb(255 240 219 / 10%);
+  backdrop-filter: blur(8px);
+}
+
+.home-header-nav {
+  background: rgb(35 19 12 / 18%);
+  border-color: transparent;
+}
+
+.home-header .bk-display {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+@media (max-width: 767px) {
+  .home-hero {
+    min-height: 560px;
+  }
+
+  .home-hero-shade {
+    background: linear-gradient(90deg, rgb(25 12 6 / 67%), rgb(25 12 6 / 30%)), linear-gradient(0deg, rgb(25 12 6 / 28%), transparent 40%);
+  }
+
+  .home-announcement {
+    min-height: 38px;
+    padding-block: 0.55rem;
+    font-size: 10px;
+  }
+
+  .home-announcement span:nth-child(n + 3) {
+    display: none;
+  }
+
+  .home-header-nav {
+    background: rgb(35 19 12 / 24%);
+  }
+}

@@ -55,6 +55,8 @@ next-env.d.ts
 *.png
 !public/*.png
 !public/covers/*.png
+!public/banners/
+!public/banners/*.png
 section5-before.png
 
 .vercel

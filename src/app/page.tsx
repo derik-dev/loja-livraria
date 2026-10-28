@@ -1,10 +1,10 @@
 'use client'
 
 import { Header, Footer } from '@/components/layout'
-import { FaqSection } from '@/components/ui'
 import { CartDrawer } from '@/components/cart'
 import ChatAssistant from '@/components/ui/ChatAssistant'
-import { Hero, CategoryChips, Deals, TeamPicks, BookCarousel, SectionHeading, BestSellers, CategoryGrid, VisitStore } from '@/components/home'
+import { Hero, BenefitCards, Offers, PromoBanner, TeamPicks, BookCarousel, SectionHeading, Ranking, Collections, Authors, VideoSection, Testimonials, VisitStore, Faq, Newsletter, Blog, Publishers } from '@/components/home'
+import { siteConfig } from '@/site.config'
 import { mockProducts } from '@/lib/data/products'
 
 export default function HomePage() {
@@ -13,27 +13,34 @@ export default function HomePage() {
 
   return (
     <>
-      <Header />
+      <Header overlay />
       <CartDrawer />
       <ChatAssistant />
       <main className="min-h-screen bg-bg">
         {/* Tom por seção: escuro (hero, mais procurados) e claro (demais), com fundos claros alternados */}
         <div data-tone="dark">
-          <Hero products={products} />
-          <CategoryChips />
+          <Hero />
         </div>
-        <div data-tone="light"><Deals products={products} /></div>
-        <div data-tone="light" data-surface="alt"><TeamPicks products={products} /></div>
-        <div data-tone="light">
-          <section className="mx-auto max-w-[1200px] px-4 py-12 md:py-16" aria-labelledby="chegaram-titulo">
-            <SectionHeading eyebrow="Lançamentos" title="Chegaram à estante" id="chegaram-titulo" href="/secao/novidades" linkLabel="Ver todos" />
-            <BookCarousel books={arrivals.length > 0 ? arrivals : products} label="Chegaram à estante" />
+        <BenefitCards />
+        <Offers products={products} />
+        <PromoBanner />
+        <TeamPicks products={products} />
+        <div data-tone="light" className="overflow-x-clip bg-bg">
+          <section className="px-5 py-14 md:px-16 md:py-20" aria-labelledby="chegaram-titulo">
+            <SectionHeading eyebrow="Lançamentos" title="Chegaram à estante" id="chegaram-titulo" href="/secao/novidades" linkLabel="Ver todos" center />
+            <BookCarousel books={arrivals.length > 0 ? arrivals : products} label="Chegaram à estante" spread />
           </section>
         </div>
-        <div data-tone="dark"><BestSellers products={products} /></div>
-        <div data-tone="light"><CategoryGrid /></div>
-        <div data-tone="light" data-surface="alt"><VisitStore /></div>
-        <div data-tone="light"><FaqSection /></div>
+        <Ranking products={products} />
+        <Collections />
+        {siteConfig.sections.authors && <Authors />}
+        {siteConfig.sections.video && <VideoSection />}
+        {siteConfig.sections.testimonials && <Testimonials />}
+        {siteConfig.sections.physicalStore && <VisitStore />}
+        <Faq />
+        {siteConfig.sections.blog && <Blog />}
+        {siteConfig.sections.publishers && <Publishers />}
+        <Newsletter />
       </main>
       <Footer />
     </>

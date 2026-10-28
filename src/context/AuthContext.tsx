@@ -8,13 +8,10 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
-  authModalOpen: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (email: string, password: string, name: string) => Promise<{ error: string | null }>
-  signInWithGoogle: () => Promise<void>
+  signInWithGoogle: (returnTo?: string) => Promise<void>
   signOut: () => Promise<void>
-  openAuthModal: () => void
-  closeAuthModal: () => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -23,7 +20,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
-  const [authModalOpen, setAuthModalOpen] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -54,11 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error?.message ?? null }
   }
 
-  async function signInWithGoogle() {
+  async function signInWithGoogle(returnTo = '/conta') {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnTo)}`,
       },
     })
   }
@@ -72,13 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       session,
       loading,
-      authModalOpen,
       signIn,
       signUp,
       signInWithGoogle,
       signOut,
-      openAuthModal: () => setAuthModalOpen(true),
-      closeAuthModal: () => setAuthModalOpen(false),
     }}>
       {children}
     </AuthContext.Provider>

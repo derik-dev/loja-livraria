@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Product } from '@/lib/types'
 import { formatCurrency, calculateDiscount } from '@/lib/utils'
 import { useCartStore } from '@/store/cartStore'
@@ -16,27 +17,36 @@ interface ProductCardProps {
   /** Só o primeiro card visível da página deve usar priority. */
   priority?: boolean
   sizes?: string
+  /** `flat`: sem moldura, capa grande e texto solto embaixo (carrosséis da home). */
+  variant?: 'card' | 'flat'
 }
 
 /** Card de livro reutilizável: capa 2:3, preço em destaque, selo de desconto e ação principal. */
-export default function ProductCard({ product, priority = false, sizes }: ProductCardProps) {
+export default function ProductCard({ product, priority = false, sizes, variant = 'card' }: ProductCardProps) {
   const addItem = useCartStore((s) => s.addItem)
+  const router = useRouter()
   const { toggleWishlist, isWishlisted } = useWishlist()
-  const { user, openAuthModal } = useAuth()
+  const { user } = useAuth()
   const wishlisted = isWishlisted(product.id)
   const discount = product.originalPrice ? calculateDiscount(product.originalPrice, product.price) : null
   const soldOut = product.stock === 0
+  const flat = variant === 'flat'
 
   return (
-    <article className="surface surface-lift group relative flex h-full flex-col p-3 motion-safe:hover:-translate-y-0.5">
+    <article className={flat ? 'group relative flex h-full flex-col' : 'surface surface-lift group relative flex h-full flex-col p-3 motion-safe:hover:-translate-y-0.5'}>
       <div className="relative">
         <Link
           href={`/produto/${product.slug}`}
-          className="relative block aspect-[2/3] overflow-hidden rounded-lg bg-card-hover"
+          className={`relative block aspect-[2/3] overflow-hidden bg-card-hover ${flat ? 'rounded-sm' : 'rounded-lg'}`}
           aria-label={`Ver ${product.name}`}
+          data-cursor="Ver"
         >
           <BookImage src={product.images[0]} title={product.name} priority={priority} sizes={sizes} />
         </Link>
+
+        {discount && (
+          <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-accent px-2.5 py-1 text-[11px] font-bold leading-none text-on-accent shadow-sm">-{discount}%</span>
+        )}
 
         <button
           type="button"
@@ -51,7 +61,7 @@ export default function ProductCard({ product, priority = false, sizes }: Produc
         </button>
       </div>
 
-      <div className="mt-4 flex flex-1 flex-col px-1">
+      <div className={`flex flex-1 flex-col ${flat ? 'mt-3' : 'mt-4 px-1'}`}>
         <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted">{getMockCategoryLabel(product.category)}</p>
         <Link href={`/produto/${product.slug}`} className="mt-1 focus-visible:rounded">
           <h3 className="z-plain line-clamp-2 text-[15px] font-medium leading-snug text-ink">{product.name}</h3>
@@ -61,7 +71,6 @@ export default function ProductCard({ product, priority = false, sizes }: Produc
         <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
           <span className="text-xl font-semibold text-ink">{formatCurrency(product.price)}</span>
           {product.originalPrice && <span className="text-[13px] text-muted line-through">{formatCurrency(product.originalPrice)}</span>}
-          {discount && <span className="rounded bg-accent px-1.5 py-0.5 text-[11px] font-bold leading-none text-on-accent">-{discount}%</span>}
         </div>
 
         <div className="mt-auto pt-4">
@@ -69,11 +78,14 @@ export default function ProductCard({ product, priority = false, sizes }: Produc
             type="button"
             onClick={() => {
               if (soldOut) return
-              if (!user) { openAuthModal(); return }
+              if (!user) {
+                router.push(`/login?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`)
+                return
+              }
               addItem(product)
             }}
             disabled={soldOut}
-            className="btn-primary w-full"
+            className={flat ? 'btn-outline w-full' : 'btn-primary w-full'}
           >
             {soldOut ? 'Esgotado' : 'Adicionar à sacola'}
           </button>

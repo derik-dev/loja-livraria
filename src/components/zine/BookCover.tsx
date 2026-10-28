@@ -1,17 +1,50 @@
 import Image from 'next/image'
 
-// Capas geradas para livros ainda sem foto: só cores do tema.
-const BINDINGS = [
-  { bg: 'var(--card-hover)', fg: 'var(--ink)', line: 'var(--accent)' },
-  { bg: 'var(--accent)', fg: 'var(--on-accent)', line: 'var(--on-accent)' },
-  { bg: 'var(--card)', fg: 'var(--ink)', line: 'var(--muted)' },
-  { bg: 'var(--ink)', fg: 'var(--bg)', line: 'var(--accent)' },
-]
+// Capas geradas para livros ainda sem foto: cada uma é um bloco sólido da paleta (marrom, tan, creme, vinho)
+// com um detalhe gráfico simples. Texto sempre com contraste (claro no escuro, escuro no claro).
+const COVERS = [
+  { bg: 'var(--color-marrom-medio)', fg: 'var(--color-creme)', accent: 'var(--color-tan)', art: 'sun' },
+  { bg: 'var(--color-tan)', fg: 'var(--color-espresso-deep)', accent: 'var(--color-espresso)', art: 'bars' },
+  { bg: 'var(--color-creme-card)', fg: 'var(--color-espresso)', accent: 'var(--color-marrom-medio)', art: 'arch' },
+  { bg: 'var(--color-vinho)', fg: 'var(--color-creme)', accent: 'var(--color-tan)', art: 'diamond' },
+] as const
 
 function pick(title: string) {
   let h = 0
   for (let i = 0; i < title.length; i++) h = (h * 31 + title.charCodeAt(i)) >>> 0
-  return BINDINGS[h % BINDINGS.length]
+  return COVERS[h % COVERS.length]
+}
+
+function Art({ kind, color }: { kind: (typeof COVERS)[number]['art']; color: string }) {
+  const common = { viewBox: '0 0 100 100', className: 'h-full w-full', 'aria-hidden': true as const }
+  if (kind === 'sun')
+    return (
+      <svg {...common}>
+        <circle cx="50" cy="52" r="30" fill={color} />
+        <circle cx="50" cy="52" r="42" fill="none" stroke={color} strokeWidth="1.6" />
+      </svg>
+    )
+  if (kind === 'bars')
+    return (
+      <svg {...common}>
+        <rect x="14" y="22" width="72" height="14" rx="7" fill={color} />
+        <rect x="14" y="43" width="50" height="14" rx="7" fill={color} />
+        <rect x="14" y="64" width="62" height="14" rx="7" fill={color} />
+      </svg>
+    )
+  if (kind === 'arch')
+    return (
+      <svg {...common}>
+        <path d="M22 96V52a28 28 0 0 1 56 0v44Z" fill={color} />
+        <circle cx="50" cy="40" r="7" fill="var(--color-tan)" />
+      </svg>
+    )
+  return (
+    <svg {...common}>
+      <rect x="27" y="27" width="46" height="46" fill={color} transform="rotate(45 50 50)" />
+      <rect x="39" y="39" width="22" height="22" fill="var(--color-vinho)" transform="rotate(45 50 50)" />
+    </svg>
+  )
 }
 
 /** Capa gerada na hora, usada quando o livro ainda não tem foto. */
@@ -19,21 +52,19 @@ export function BookCover({ title, className = '' }: { title: string; className?
   const c = pick(title)
   return (
     <div
-      className={`relative flex h-full w-full flex-col items-center justify-between overflow-hidden px-[11%] py-[10%] text-center ${className}`}
+      className={`relative flex h-full w-full flex-col justify-between overflow-hidden px-[10%] pb-[9%] pt-[15%] ${className}`}
       style={{ background: c.bg, color: c.fg, containerType: 'inline-size' }}
       role="img"
       aria-label={`Capa de ${title}`}
     >
-      <div className="pointer-events-none absolute inset-[5%] rounded-sm border" style={{ borderColor: c.line, opacity: 0.6 }} aria-hidden="true" />
-      <span className="relative text-[clamp(0.5rem,5cqw,0.9rem)]" style={{ color: c.line }} aria-hidden="true">✦</span>
-      <span
-        className="bk-display relative text-[clamp(0.8rem,9cqw,1.5rem)] leading-[1.12] [overflow-wrap:anywhere]"
-        style={{ fontWeight: 600 }}
-      >
-        {title}
-      </span>
-      <span className="relative text-[clamp(0.45rem,4cqw,0.7rem)] uppercase tracking-[0.3em]" style={{ color: c.line }}>
+      <span className="text-[clamp(0.42rem,3.6cqw,0.65rem)] font-semibold uppercase tracking-[0.34em]" style={{ color: c.accent }}>
         Papelada
+      </span>
+      <div className="mx-auto my-[4%] min-h-0 w-[72%] flex-1">
+        <Art kind={c.art} color={c.accent} />
+      </div>
+      <span className="text-[clamp(0.8rem,9.5cqw,1.5rem)] font-semibold leading-[1.1] [overflow-wrap:anywhere]">
+        {title}
       </span>
     </div>
   )
@@ -81,14 +112,6 @@ export function BookImage({
         unoptimized={!isOptimizable(src)}
         className={className}
       />
-      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/55 to-transparent px-[9%] pb-[11%] pt-[35%] text-left text-on-image">
-        <span className="mb-[5%] block text-[clamp(0.4rem,4cqw,0.65rem)] font-semibold uppercase tracking-[0.2em] text-on-image/75">
-          Papelada · demonstração
-        </span>
-        <span className="bk-display block text-[clamp(0.7rem,9cqw,1.35rem)] font-semibold leading-[1.05] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] overflow-hidden">
-          {title}
-        </span>
-      </span>
     </span>
   )
 }
